@@ -58,7 +58,9 @@ router.route('/signup').post(userController.signUp);
  *       200:
  *         description: User logged in successfully.
  *       401:
- *         description: Credentials required/Incorrect credentials.    
+ *         description: Incorrect credentials.   
+ *       404:
+ *         description: Account does not exist.  
  */
 router.route('/login').post(userController.login);
 

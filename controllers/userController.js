@@ -81,25 +81,29 @@ exports.login = async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(401).json({ status: false, message: 'Credentials required.' });
+            return res.status(400).json({ status: false, message: 'Please enter your credentials.' });
         }
 
         var user;
         if (email) {
             user = await User.findOne({ email }).select('+password');
-        }
-
-        if (!user || !(user.comparePassword(password, user.password))) {
-            return res.status(401).json({ status: false, message: 'Incorrect credentials.' });
-        }
-
-        User.updateOne({ email }, { $set: { status: true } }, (err, data) => {
-
-            if (err) {
-                console.log(err);
+            if (user) {
+                if (!user || !(user.comparePassword(password, user.password))) {
+                    return res.status(401).json({ status: false, message: 'Incorrect credentials.' });
+                }
+        
+                User.updateOne({ email }, { $set: { status: true } }, (err, data) => {
+        
+                    if (err) {
+                        console.log(err);
+                    }
+                    createJWT(user._id, 200, 'User logged in successfully.', res);
+                });
+            } else {
+                return res.status(404).json({ status: false, message: 'Account does not exist. Please register first.' });
             }
-            createJWT(user._id, 200, 'User logged in successfully.', res);
-        });
+        }
+
 
     } catch (err) {
         console.log(err.message);

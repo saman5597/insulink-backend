@@ -3,7 +3,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const swaggerJsDoc = require('swagger-jsdoc')
 const swaggerUI = require('swagger-ui-express')
-require('dotenv').config({ path: './config.env' });
+require('dotenv').config({ path: './configuration.env' });
 const userRoute = require('./routes/userRoutes');
 
 //Start express app
