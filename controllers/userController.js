@@ -31,6 +31,15 @@ const createJWT = (userId, statusCode, message, res) => {
     });
 };
 
+exports.getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find({});
+        res.status(200).json({ status: true, users });
+    } catch (error) {
+        console.log(error)
+    }
+};
+
 exports.signUp = async (req, res) => {
     try {
 
@@ -72,7 +81,7 @@ exports.login = async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ status: false, message: 'Credentials required.' });
+            return res.status(401).json({ status: false, message: 'Credentials required.' });
         }
 
         var user;
@@ -81,10 +90,16 @@ exports.login = async (req, res) => {
         }
 
         if (!user || !(user.comparePassword(password, user.password))) {
-            return res.status(403).json({ status: false, message: 'Incorrect credentials.' });
+            return res.status(401).json({ status: false, message: 'Incorrect credentials.' });
         }
 
-        createJWT(user._id, 200, 'User logged in successfully.', res);
+        User.updateOne({ email }, { $set: { status: true } }, (err, data) => {
+
+            if (err) {
+                console.log(err);
+            }
+            createJWT(user._id, 200, 'User logged in successfully.', res);
+        });
 
     } catch (err) {
         console.log(err.message);
@@ -169,33 +184,131 @@ exports.resetPwd = async (req, res) => {
 exports.changePassword = async (req, res) => {
     try {
         const { passwordOld, passwordUpdated } = req.body;
-
-        const user = await User.findById(req.auth.id).select('+password');
-
-        if (!passwordOld) {
-            return res.status(400).json({ status: false, message: 'Please enter your current password.' })
+        
+        const user = await User.findOne({
+            _id: req.auth.id,
+            status: true
+        }).select('+password');
+        
+        if (user) {
+            if (!passwordOld) {
+                return res.status(400).json({ status: false, message: 'Please enter your current password.' })
+            }
+            
+            if (!(await user.comparePassword(passwordOld, user.password))) {
+                return res.status(401).json({ status: false, message: 'Your current password is incorrect.' })
+            }
+            
+            if (!passwordUpdated) {
+                return res.status(400).json({ status: false, message: 'Please enter your new password.' })
+            }
+            
+            user.pass = passwordUpdated
+            
+            await user.save()
+            
+            res.status(200).json({ status: true, message: 'Password changed successfully.' })
+        } else {
+            res.status(401).json({ status: false, message: 'User not found.' })
         }
-
-        if (!(await user.comparePassword(passwordOld, user.password))) {
-            return res.status(403).json({ status: false, message: 'Your current password is incorrect.' })
-        }
-
-        if (!passwordUpdated) {
-            return res.status(400).json({ status: false, message: 'Please enter your new password.' })
-        }
-
-        user.pass = passwordUpdated
-
-        await user.save()
-
-        res.status(200).json({ status: true, message: 'Password changed successfully.' })
-
+        
     } catch (err) {
         console.log(err);
     }
 }
 
-exports.logout = (req, res) => {
-    res.clearCookie('jwt');
-    res.status(200).json({ status: true, message: 'You have logged out successfully.' });
+exports.updateProfile = async (req, res) => {
+    try {
+        const { firstName, lastName, phone, gender, country } = req.body;
+        const filteredBody = {
+            firstName,
+            lastName,
+            phone,
+            gender,
+            country
+        }
+
+        const user = await User.findOne({
+            _id: req.auth.id,
+            status: true
+        });
+
+        if (user) {
+            const updatedUser = await User.findByIdAndUpdate(req.auth.id, filteredBody, {
+                new: true,
+                runValidators: true
+            })
+
+            res.status(200).json({
+                status: 'success',
+                message: 'User details updated successfully.'
+            })
+        } else {
+            res.status(401).json({ status: false, message: 'User not found.' })
+        }
+
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({ status: false, message: error._message })
+    }
+}
+
+exports.deactivateAccount = async (req, res) => {
+    try {
+        const user = await User.findOne({
+            _id: req.auth.id
+        });
+
+        if (user) {
+            User.updateOne({ _id: req.auth.id }, { $set: { status: false } }, (err, data) => {
+
+                if (err) {
+                    console.log(err);
+                }
+                res.status(200).json({ status: true, message: 'Account deactivated.' });
+            });
+        } else {
+            res.status(401).json({ status: false, message: 'User not found.' })
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+exports.deleteAccount = async (req, res) => {
+    try {
+        const user = await User.findOne({
+            _id: req.auth.id
+        });
+
+        if (user) {
+            User.deleteOne({ _id: req.auth.id }, (err, data) => {
+                if (err) {
+                    console.log(err)
+                }
+                res.status(204).json({ status: false, message: 'Account Deleted.' })
+            })
+        } else {
+            res.status(401).json({ status: false, message: 'User not found.' })
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+exports.logout = async (req, res) => {
+    try {
+        const user = await User.findOne({
+            _id: req.auth.id
+        });
+
+        if (user) {
+            res.clearCookie('jwt');
+            res.status(200).json({ status: true, message: 'You have logged out successfully.' });
+        } else {
+            res.status(401).json({ status: false, message: 'User not found.' })
+        }
+    } catch (error) {
+
+    }
 };

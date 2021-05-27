@@ -60,6 +60,10 @@ const userSchema = new mongoose.Schema(
     },
     linkExpireTime: {
       type: Date
+    },
+    status: {
+      type: Boolean,
+      default: true
     }
   },
   { id: false },
