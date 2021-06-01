@@ -1,9 +1,10 @@
-const expressJWT = require('express-jwt');
+const expressJWT = require('express-jwt')
 
-const userController = require('../controllers/userController.js');
-const authMiddleware = require('../middlewares/authMiddleware');
+const userController = require('../controllers/userController.js')
+const authController = require('../controllers/authController.js')
+const authMiddleware = require('../middlewares/authMiddleware')
 
-const router = require('express').Router();
+const router = require('express').Router()
 
 /**
  * @swagger
@@ -38,11 +39,11 @@ router.route('/').get(userController.getAllUsers)
  *       409:
  *         description: Duplicate data found.     
  */
-router.route('/signup').post(userController.signUp);
+router.route('/signup').post(authController.signUp)
 
 /**
  * @swagger
- * /api/v1/users/login:
+ * /api/v1/users/loginUsingEmail:
  *   post:
  *     description: Login user
  *     produces:
@@ -53,7 +54,7 @@ router.route('/signup').post(userController.signUp);
  *       description: "User login details"
  *       required: true
  *       schema:    
- *        $ref: "#/definitions/Logindata"
+ *        $ref: "#/definitions/Loginusingemail"
  *     responses:
  *       200:
  *         description: User logged in successfully.
@@ -62,7 +63,31 @@ router.route('/signup').post(userController.signUp);
  *       404:
  *         description: Account does not exist.  
  */
-router.route('/login').post(userController.login);
+router.route('/loginUsingEmail').post(authController.loginUsingEmail)
+
+/**
+ * @swagger
+ * /api/v1/users/loginUsingMob:
+ *   post:
+ *     description: Login user using mobile number
+ *     produces:
+ *     - "application/json"
+ *     parameters:
+ *     - in: "body"
+ *       name: "body"
+ *       description: "User login details"
+ *       required: true
+ *       schema:    
+ *        $ref: "#/definitions/Loginusingmob"
+ *     responses:
+ *       200:
+ *         description: User logged in successfully.
+ *       401:
+ *         description: Incorrect credentials.   
+ *       404:
+ *         description: Account does not exist.  
+ */
+router.route('/loginUsingMob').post(authController.loginUsingMob)
 
 /**
  * @swagger
@@ -86,12 +111,12 @@ router.route('/login').post(userController.login);
  *       200:
  *         description: Reset URL in response   
  */
-router.route('/forgotPassword').post(userController.forgotPwd);
+router.route('/forgotPassword').post(authController.forgotPwd)
 
-router.route('/resetPassword').patch(userController.resetPwd);
+router.route('/resetPassword').patch(authController.resetPwd)
 
 // Protected Routes starts here
-router.use(expressJWT({ secret: process.env.JWT_SECRET, requestProperty: 'auth', algorithms: ['sha1', 'RS256', 'HS256'] }), authMiddleware.checkAuth);
+router.use(expressJWT({ secret: process.env.JWT_SECRET, requestProperty: 'auth', algorithms: ['sha1', 'RS256', 'HS256'] }), authMiddleware.checkAuth)
 
 /**
  * @swagger
@@ -106,7 +131,7 @@ router.use(expressJWT({ secret: process.env.JWT_SECRET, requestProperty: 'auth',
  *     security:
  *     - bearerAuth: []      
  */
- router.route('/deactivateAccount').post(userController.deactivateAccount);
+ router.route('/deactivateAccount').post(userController.deactivateAccount)
 
  /**
   * @swagger
@@ -132,7 +157,7 @@ router.use(expressJWT({ secret: process.env.JWT_SECRET, requestProperty: 'auth',
   *     security:
   *     - bearerAuth: []      
   */
-router.route('/changePassword').post(userController.changePassword);
+router.route('/changePassword').post(userController.changePassword)
 
  /**
   * @swagger
@@ -158,7 +183,7 @@ router.route('/changePassword').post(userController.changePassword);
   *     security:
   *     - bearerAuth: []      
   */
-router.route('/updateProfile').put(userController.updateProfile);
+router.route('/updateProfile').put(userController.updateProfile)
 
 
 /**
@@ -174,7 +199,7 @@ router.route('/updateProfile').put(userController.updateProfile);
  *     security:
  *     - bearerAuth: []      
  */
-router.route('/deactivateAccount').post(userController.deactivateAccount);
+router.route('/deactivateAccount').post(userController.deactivateAccount)
 
 /**
  * @swagger
@@ -189,7 +214,7 @@ router.route('/deactivateAccount').post(userController.deactivateAccount);
  *     security:
  *     - bearerAuth: []      
  */
-router.route('/deleteAccount').delete(userController.deleteAccount);
+router.route('/deleteAccount').delete(userController.deleteAccount)
 
 /**
  * @swagger
@@ -204,6 +229,6 @@ router.route('/deleteAccount').delete(userController.deleteAccount);
  *     security:
  *     - bearerAuth: []      
  */
-router.route('/logout').get(userController.logout);
+router.route('/logout').get(authController.logout)
 
-module.exports = router;
+module.exports = router
