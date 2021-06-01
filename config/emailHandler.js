@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer')
 
 async function sendMail( { from, to, subject, text, html }) {
 
@@ -10,7 +10,7 @@ async function sendMail( { from, to, subject, text, html }) {
           user: process.env.EMAIL_USERNAME,
           pass: process.env.EMAIL_PWD
         }
-      }); 
+      }) 
 
       let info = await transporter.sendMail({
           from,
@@ -18,10 +18,10 @@ async function sendMail( { from, to, subject, text, html }) {
           subject,
           text,
           html
-      });
+      })
 
-      console.log("Message sent: %s", info.messageId);
-      console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+      console.log("Message sent: %s", info.messageId)
+      console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info))
 } 
 
-module.exports = sendMail;
+module.exports = sendMail

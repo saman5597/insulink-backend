@@ -41,7 +41,7 @@
                 "name":"Signupdata"
              }
           },
-          "Logindata":{
+          "Loginusingemail":{
              "type":"object",
              "properties":{
                 "email":{
@@ -52,9 +52,23 @@
                 }
              },
              "xml":{
-                "name":"Logindata"
+                "name":"Loginusingemail"
              }
           },
+          "Loginusingmob":{
+            "type":"object",
+            "properties":{
+               "phone":{
+                  "type":"string"
+               },
+               "password":{
+                  "type":"string"
+               }
+            },
+            "xml":{
+               "name":"Loginusingmob"
+            }
+         },
           "Forgotpassword":{
              "type":"object",
              "properties":{

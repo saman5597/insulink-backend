@@ -1,26 +1,35 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
-const bcrypt = require('bcryptjs');
+const mongoose = require('mongoose')
+const validator = require('validator')
+const bcrypt = require('bcryptjs')
 
 const schemaOptions = {
   timestamps: true,
+  id: false,
   toJSON: {
     virtuals: true
   },
   toObject: {
     virtuals: true
   }
-};
+}
 
 const userSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
-      required: [true, 'First name is required.']
+      required: [true, 'First name is required.'],
+      maxlength: [
+        50,
+        'First name must have less or equal than 50 characters.'
+      ]
     },
     lastName: {
       type: String,
-      required: [true, 'Last name is required.']
+      required: [true, 'Last name is required.'],
+      maxlength: [
+        50,
+        'Last name must have less or equal than 50 characters.'
+      ],
     },
     email: {
       type: String,
@@ -33,9 +42,10 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: Number,
       required: [true, 'Phone number is required.'],
+      unique: true,
       validate: {
         validator: function (v) {
-          return /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(v);
+          return /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(v)
         },
         message: '{VALUE} is not a valid phone number.'
       }
@@ -43,7 +53,7 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
       required: [true, 'Gender is required'],
-      enum: ['male', 'female', 'others']
+      enum: ['M', 'F', 'O']
     },
     country: {
       type: String,
@@ -62,25 +72,29 @@ const userSchema = new mongoose.Schema(
       type: Date
     },
     status: {
-      type: Boolean,
-      default: true
+      type: String,
+      enum: ['active', 'inactive'],
+      default: 'active'
+    },
+    devices: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Device"
     }
   },
-  { id: false },
   schemaOptions
-);
+)
 
 userSchema.virtual('pass')
   .set(function (pass) {
-    this._pass = pass;
-    this.password = bcrypt.hashSync(pass, 8);
-  });
+    this._pass = pass
+    this.password = bcrypt.hashSync(pass, 8)
+  })
 
 userSchema.methods.comparePassword = function (reqPassword, userPassword) {
-  let res = bcrypt.compareSync(reqPassword, userPassword);
-  return res;
-};
+  let res = bcrypt.compareSync(reqPassword, userPassword)
+  return res
+}
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema)
 
-module.exports = User;
+module.exports = User

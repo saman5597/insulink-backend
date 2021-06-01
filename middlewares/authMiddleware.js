@@ -1,4 +1,4 @@
-const User = require('../models/userModel');
+const User = require('../models/userModel')
 
 exports.checkAuth = async (err, req, res, next) => {
 
@@ -9,26 +9,26 @@ exports.checkAuth = async (err, req, res, next) => {
         return res.status(401).send({
           success: false,
           message: 'Not authenticated.'
-        });
+        })
       }
     }
 
     if (!req.auth) {
-      return res.status(401).json({ status: false, message: 'You are not logged in. Please login.' });
+      return res.status(401).json({ status: false, message: 'You are not logged in. Please login.' })
     }
 
-    const currentUser = await User.findById(req.auth.id);
+    const currentUser = await User.findById(req.auth.id)
 
     if (!currentUser) {
-      return res.status(401).json({ status: false, message: 'The user belonging to the token does no longer exist.' });
+      return res.status(401).json({ status: false, message: 'The user belonging to the token does no longer exist.' })
     }
 
-    req.currentUser = currentUser;
+    req.currentUser = currentUser
 
-    next();
+    next()
 
   } catch (err) {
-    console.log(err.message);
+    console.log(err.message)
   }
 
-};
+}
