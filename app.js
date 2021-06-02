@@ -7,6 +7,7 @@ const { buildSchema } = require('graphql')
 const { graphqlHTTP } = require('express-graphql')
 require('dotenv').config({ path: './configuration.env' })
 const userRoute = require('./routes/userRoutes')
+const authRoute = require('./routes/authRoutes')
 const User = require('./models/userModel')
 const Device = require('./models/deviceModel')
 
@@ -31,6 +32,7 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs))
 
 //Mounting the router
 app.use('/api/v1/users', userRoute)
+app.use('/api/v1/auth', authRoute)
 
 var graphqlSchema = buildSchema(`
   type User {

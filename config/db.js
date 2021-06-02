@@ -1,4 +1,5 @@
 const mongoose =  require('mongoose')
+const Logger = require('./Logger')
 
 function connectToDB() {
 
@@ -9,8 +10,10 @@ function connectToDB() {
 
     connection.once('open' , () => {
         console.log('Database connected.')
+        new Logger("insulink").d("Database connected")
     }).catch(err => {
         console.log('Connection failed.')
+        new Logger("insulink").e("Connection failed", err)
         console.warn(err)
     })
 }

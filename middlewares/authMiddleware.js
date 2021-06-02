@@ -28,7 +28,7 @@ exports.checkAuth = async (err, req, res, next) => {
     next()
 
   } catch (err) {
-    console.log(err.message)
+    console.log(err)
   }
 
 }

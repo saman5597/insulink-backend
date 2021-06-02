@@ -1,7 +1,9 @@
 const connectDB = require('./config/db')
+const Logger = require('./config/Logger')
 
 process.on('uncaughtException', err => {
   console.log('Shutting down app...')
+  new Logger("insulink").e("Shutting down app", err)
   console.log(err.name, err.message)
   process.exit(1)
 })
@@ -18,6 +20,7 @@ app.listen(PORT, async () => {
 
 process.on('unhandledRejection', err => {
   console.log('Shutting down app...')
+  new Logger("insulink").e("Shutting down app", err)
   console.log(err.name, err.message)
   process.exit(1)
 })
