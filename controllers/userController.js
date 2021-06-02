@@ -54,7 +54,7 @@ exports.changePassword = async (req, res) => {
             res.status(200).json({ status: true, message: 'Password changed successfully.' })
         } else {
             new Logger("insulink").e("Change pwd User not found", req.body)
-            return res.status(401).json({ status: false, message: 'User not found.' })
+            return res.status(404).json({ status: false, message: 'User not found.' })
         }
 
     } catch (err) {
@@ -93,14 +93,14 @@ exports.updateProfile = async (req, res) => {
             })
         } else {
             new Logger("insulink").e("Update profile User not found", req.body)
-            return res.status(401).json({ status: false, message: 'User not found.' })
+            return res.status(404).json({ status: false, message: 'User not found.' })
         }
 
     } catch (error) {
         console.log(error)
 
         if (error.code === 11000) {
-            return res.status(400).json({ status: false, message: `${error.codeName} error` }) 
+            return res.status(409).json({ status: false, message: `${error.codeName} error` }) 
         }
 
         new Logger("insulink").e("Error in Update Profile", error)
@@ -125,7 +125,7 @@ exports.deactivateAccount = async (req, res) => {
 
         } else {
             new Logger("insulink").e("Deactivate Account User not found")
-            return res.status(401).json({ status: false, message: 'User not found.' })
+            return res.status(404).json({ status: false, message: 'User not found.' })
         }
     } catch (error) {
         console.log(error)
@@ -147,7 +147,7 @@ exports.deleteAccount = async (req, res) => {
             res.status(204).json({ status: true, message: 'Account Deleted.' })
 
         } else {
-            return res.status(401).json({ status: false, message: 'User not found.' })
+            return res.status(404).json({ status: false, message: 'User not found.' })
         }
     } catch (error) {
         console.log(error)

@@ -38,7 +38,9 @@ router.use(expressJWT({ secret: process.env.JWT_SECRET, requestProperty: 'auth',
   *       400:
   *         description: Invalid data.
   *       401:
-  *         description: Your current password is incorrect/User not found.
+  *         description: Your current password is incorrect.
+  *       404:
+  *         description: User not found.
   *       200:
   *         description: Password changed successfully.
   *     security:
@@ -63,8 +65,10 @@ router.route('/changePassword').post(userController.changePassword)
   *     responses:
   *       400:
   *         description: Invalid data.
-  *       401:
+  *       404:
   *         description: User not found.
+  *       409:
+  *         description: Duplicate data found.
   *       200:
   *         description: User details updated successfully
   *     security:
@@ -81,7 +85,7 @@ router.route('/updateProfile').put(userController.updateProfile)
  *     responses:
  *       204:
  *         description: Account Deleted.
- *       401:
+ *       404:
  *         description: User not found.
  *     security:
  *     - bearerAuth: []      
@@ -96,7 +100,7 @@ router.route('/deactivateAccount').post(userController.deactivateAccount)
  *     responses:
  *       204:
  *         description: Account Deleted.
- *       401:
+ *       404:
  *         description: User not found.
  *     security:
  *     - bearerAuth: []      
