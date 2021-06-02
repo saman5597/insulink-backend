@@ -243,7 +243,7 @@ exports.logout = async (req, res) => {
             res.status(200).json({ status: true, message: 'You have logged out successfully.' })
         } else {
             new Logger("insulink").e("Logout User not found")
-            return res.status(401).json({ status: false, message: 'User not found.' })
+            return res.status(404).json({ status: false, message: 'User not found.' })
         }
     } catch (error) {
         console.log(error)

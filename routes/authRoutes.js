@@ -47,6 +47,8 @@ router.route('/signup').post(authController.signUp)
  *     responses:
  *       200:
  *         description: User logged in successfully.
+ *       400:
+ *         description: Please enter your credentials.
  *       401:
  *         description: Incorrect credentials.   
  *       404:
@@ -71,6 +73,8 @@ router.route('/loginUsingEmail').post(authController.loginUsingEmail)
  *     responses:
  *       200:
  *         description: User logged in successfully.
+ *       400:
+ *         description: Please enter your credentials.
  *       401:
  *         description: Incorrect credentials.   
  *       404:
@@ -115,7 +119,7 @@ router.use(expressJWT({ secret: process.env.JWT_SECRET, requestProperty: 'auth',
  *     responses:
  *       200:
  *         description: You have logged out successfully.
- *       401:
+ *       404:
  *         description: User not found.
  *     security:
  *     - bearerAuth: []      
