@@ -1,6 +1,5 @@
 const expressJWT = require('express-jwt')
 
-const userController = require('../controllers/userController.js')
 const authController = require('../controllers/authController.js')
 const authMiddleware = require('../middlewares/authMiddleware')
 

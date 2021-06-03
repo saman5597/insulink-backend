@@ -76,6 +76,11 @@ const userSchema = new mongoose.Schema(
       enum: ['active', 'inactive'],
       default: 'active'
     },
+    role: {
+      type: Number,
+      enum: [0, 1], // 0 -> user , 1 -> admin
+      default: 0
+    },
     devices: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Device"

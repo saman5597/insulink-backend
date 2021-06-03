@@ -1,10 +1,12 @@
 const expressJWT = require('express-jwt')
 
 const userController = require('../controllers/userController.js')
-const authController = require('../controllers/authController.js')
 const authMiddleware = require('../middlewares/authMiddleware')
 
 const router = require('express').Router()
+
+// Protected Routes starts here
+router.use(expressJWT({ secret: process.env.JWT_SECRET, requestProperty: 'auth', algorithms: ['sha1', 'RS256', 'HS256'] }), authMiddleware.checkAuth)
 
 /**
  * @swagger
@@ -15,65 +17,75 @@ const router = require('express').Router()
  *       200:
  *         description: Array of users.      
  */
-router.route('/').get(userController.getAllUsers)
+router.route('/').get(authMiddleware.authorizeTo(1), userController.getAllUsers)
 
-// Protected Routes starts here
-router.use(expressJWT({ secret: process.env.JWT_SECRET, requestProperty: 'auth', algorithms: ['sha1', 'RS256', 'HS256'] }), authMiddleware.checkAuth)
+/**
+ * @swagger
+ * /api/v1/users/myProfile:
+ *   get:
+ *     description: Get data of logged in user
+ *     responses:
+ *       200:
+ *         description: Data of logged in user.   
+ *     security:
+ *     - bearerAuth: []    
+ */
+router.route('/myProfile').get(userController.getLoggedInUser)
 
- /**
-  * @swagger
-  * /api/v1/users/changePassword:
-  *   post:
-  *     description: Change user password
-  *     produces:
-  *     - "application/json"
-  *     parameters:
-  *     - in: "body"
-  *       name: "body"  
-  *       description: "User old and new password"  
-  *       required: true 
-  *       schema:
-  *         $ref: "#/definitions/Changepassword"
-  *     responses:
-  *       400:
-  *         description: Invalid data.
-  *       401:
-  *         description: Your current password is incorrect.
-  *       404:
-  *         description: User not found.
-  *       200:
-  *         description: Password changed successfully.
-  *     security:
-  *     - bearerAuth: []      
-  */
+/**
+ * @swagger
+ * /api/v1/users/changePassword:
+ *   post:
+ *     description: Change user password
+ *     produces:
+ *     - "application/json"
+ *     parameters:
+ *     - in: "body"
+ *       name: "body"  
+ *       description: "User old and new password"  
+ *       required: true 
+ *       schema:
+ *         $ref: "#/definitions/Changepassword"
+ *     responses:
+ *       400:
+ *         description: Invalid data.
+ *       401:
+ *         description: Your current password is incorrect.
+ *       404:
+ *         description: User not found.
+ *       200:
+ *         description: Password changed successfully.
+ *     security:
+ *     - bearerAuth: []      
+ */
 router.route('/changePassword').post(userController.changePassword)
 
- /**
-  * @swagger
-  * /api/v1/users/updateProfile:
-  *   put:
-  *     description: Update user profile
-  *     produces:
-  *     - "application/json"
-  *     parameters:
-  *     - in: "body"
-  *       name: "body"  
-  *       description: "User profile details"  
-  *       required: true 
-  *       schema:
-  *         $ref: "#/definitions/Updateprofile"
-  *     responses:
-  *       400:
-  *         description: Invalid data.
-  *       404:
-  *         description: User not found.
-  *       409:
-  *         description: Duplicate data found.
-  *       200:
-  *         description: User details updated successfully
-  *     security:
-  *     - bearerAuth: []      
-  */
+/**
+ * @swagger
+ * /api/v1/users/updateProfile:
+ *   put:
+ *     description: Update user profile
+ *     produces:
+ *     - "application/json"
+ *     parameters:
+ *     - in: "body"
+ *       name: "body"  
+ *       description: "User profile details"  
+ *       required: true 
+ *       schema:
+ *         $ref: "#/definitions/Updateprofile"
+ *     responses:
+ *       400:
+ *         description: Invalid data.
+ *       404:
+ *         description: User not found.
+ *       409:
+ *         description: Duplicate data found.
+ *       200:
+ *         description: User details updated successfully
+ *     security:
+ *     - bearerAuth: []      
+ */
 router.route('/updateProfile').put(userController.updateProfile)
 
 

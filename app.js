@@ -25,6 +25,14 @@ if (process.env.NODE_ENV === 'development') {
 // Body-parsing , reading data from body into req.body
 app.use(express.json())
 
+// IP Address and Hostname 
+app.use(function (req, res, next) {
+  let ip = req.header('x-forwarded-for') || req.connection.remoteAddress
+  req.ipAddress = ip.split(':').slice(-1)[0]
+  req.hostName = req.get('host') 
+  next()
+})
+
 const swaggerOptions = require('./config/swagger.json')
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions)

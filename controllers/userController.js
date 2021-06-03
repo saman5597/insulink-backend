@@ -10,12 +10,22 @@ exports.getAllUsers = async (req, res) => {
             // match: { modelName: { $ne: 'pro' } }
         })
 
-        new Logger("insulink").i("Get JSON array of all users")
-
         res.status(200).json({ status: true, users })
     } catch (error) {
         console.log(error)
-        new Logger("insulink").e("Error in Get Users", error)
+    }
+}
+
+exports.getLoggedInUser = async (req, res) => {
+    try {
+        const user = await User.findOne({ _id : req.auth.id}).populate({
+            path: "devices",
+            select: "-users"
+        })
+
+        res.status(200).json({ status: true, user })
+    } catch (error) {
+        console.log(error)
     }
 }
 
@@ -30,17 +40,14 @@ exports.changePassword = async (req, res) => {
 
         if (user) {
             if (!passwordOld) {
-                new Logger("insulink").e("Change pwd Please enter your current password", req.body)
                 return res.status(400).json({ status: false, message: 'Please enter your current password.' })
             }
 
             if (!(await user.comparePassword(passwordOld, user.password))) {
-                new Logger("insulink").e("Change pwd Your current password is incorrect", req.body)
                 return res.status(401).json({ status: false, message: 'Your current password is incorrect.' })
             }
 
             if (!passwordUpdated) {
-                new Logger("insulink").e("Change pwd Please enter your new password", req.body)
                 return res.status(400).json({ status: false, message: 'Please enter your new password.' })
             }
 
@@ -49,17 +56,13 @@ exports.changePassword = async (req, res) => {
 
             await user.save()
 
-            new Logger("insulink").i("Change pwd Password changed successfully")
-
             res.status(200).json({ status: true, message: 'Password changed successfully.' })
         } else {
-            new Logger("insulink").e("Change pwd User not found", req.body)
             return res.status(404).json({ status: false, message: 'User not found.' })
         }
 
     } catch (err) {
         console.log(err)
-        new Logger("insulink").e("Error in Change Pwd", err)
     }
 }
 
@@ -85,14 +88,12 @@ exports.updateProfile = async (req, res) => {
                 runValidators: true
             })
 
-            new Logger("insulink").i("Update profile User details updated successfully")
 
             res.status(200).json({
                 status: 'success',
                 message: 'User details updated successfully.'
             })
         } else {
-            new Logger("insulink").e("Update profile User not found", req.body)
             return res.status(404).json({ status: false, message: 'User not found.' })
         }
 
@@ -100,10 +101,9 @@ exports.updateProfile = async (req, res) => {
         console.log(error)
 
         if (error.code === 11000) {
-            return res.status(409).json({ status: false, message: `${error.codeName} error` }) 
+            return res.status(409).json({ status: false, message: `${error.codeName} error` })
         }
 
-        new Logger("insulink").e("Error in Update Profile", error)
         return res.status(400).json({ status: false, message: error._message })
     }
 }
@@ -119,17 +119,13 @@ exports.deactivateAccount = async (req, res) => {
 
             const userData = await User.updateOne({ _id: req.auth.id }, { $set: { status: 'inactive' } })
 
-            new Logger("insulink").i("Account deactivated")
-
             res.status(200).json({ status: true, message: 'Account deactivated.' })
 
         } else {
-            new Logger("insulink").e("Deactivate Account User not found")
             return res.status(404).json({ status: false, message: 'User not found.' })
         }
     } catch (error) {
         console.log(error)
-        new Logger("insulink").e("Error in Deactivate Account", error)
     }
 }
 
@@ -142,8 +138,6 @@ exports.deleteAccount = async (req, res) => {
         if (user) {
             const deletedUser = await User.deleteOne({ _id: req.auth.id })
 
-            new Logger("insulink").i("Account Deleted")
-
             res.status(204).json({ status: true, message: 'Account Deleted.' })
 
         } else {
@@ -151,6 +145,5 @@ exports.deleteAccount = async (req, res) => {
         }
     } catch (error) {
         console.log(error)
-        new Logger("insulink").e("Error in Delete Account", error)
     }
 }

@@ -23,12 +23,22 @@ exports.checkAuth = async (err, req, res, next) => {
       return res.status(401).json({ status: false, message: 'The user belonging to the token does no longer exist.' })
     }
 
-    req.currentUser = currentUser
-
     next()
 
   } catch (err) {
     console.log(err)
   }
 
+}
+
+exports.authorizeTo = (role) => {
+  return async (req, res, next) => {
+    
+    const currentUser = await User.findById(req.auth.id)
+
+    if (role !== currentUser.role) {
+      return res.status(403).json({ status: false, message: 'You do not have permission to perform this action.' })
+    }
+    next()
+  }
 }
