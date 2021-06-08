@@ -1,6 +1,14 @@
+const expressJWT = require('express-jwt')
+
 const User = require('../models/userModel')
 
-exports.checkAuth = async (err, req, res, next) => {
+exports.isSignedIn = expressJWT({
+  secret: process.env.JWT_SECRET,
+  requestProperty: 'auth',
+  algorithms: ['sha1', 'RS256', 'HS256']
+})
+
+exports.isAuth = async (err, req, res, next) => {
 
   try {
 
@@ -31,9 +39,12 @@ exports.checkAuth = async (err, req, res, next) => {
 
 }
 
-exports.authorizeTo = (role) => {
+exports.isAdmin = authorizeTo(1)
+exports.isUser = authorizeTo(0)
+
+function authorizeTo(role) {
   return async (req, res, next) => {
-    
+
     const currentUser = await User.findById(req.auth.id)
 
     if (role !== currentUser.role) {

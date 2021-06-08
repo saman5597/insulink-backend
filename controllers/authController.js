@@ -1,14 +1,15 @@
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
-const Logger = require('../config/Logger')
 
 const sendMail = require('../config/emailHandler')
 const User = require('../models/userModel')
+const { validationResult } = require("express-validator")
 
 const signToken = id => {
 
     return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES_IN
+        expiresIn: process.env.JWT_EXPIRES_IN,
+        issuer: 'AgVa Healthcare'
     })
 }
 
@@ -16,18 +17,11 @@ const createJWT = (userId, statusCode, message, res) => {
 
     const token = signToken(userId)
 
-    const cookieOptions = {
-        expires: new Date(
-            Date.now() + process.env.JWT_COOKIE_EXPIRY_DT * 24 * 60 * 60 * 1000
-        ),
-        secure: false,
-        httpOnly: true
-    }
-
-    res.cookie('jwt', token, cookieOptions)
+    res.header('Authorization', `Bearer  ${token}`)
 
     res.status(statusCode).json({
         status: true,
+        token,
         message
     })
 }
@@ -96,6 +90,7 @@ exports.loginUsingEmail = async (req, res) => {
 
     } catch (err) {
         console.log(err)
+        res.status(500).json({ status: false, message: 'Internal Server Error.' })
     }
 }
 
@@ -127,11 +122,22 @@ exports.loginUsingMob = async (req, res) => {
 
     } catch (err) {
         console.log(err)
+        res.status(500).json({ status: false, message: 'Internal Server Error.' })
     }
 }
 
 exports.forgotPwd = async (req, res) => {
     try {
+
+        // let errors = validationResult(req)
+        // if (errors.isEmpty) {
+        //     return res.status(400).json({
+        //         status: -1,
+        //         data: {
+        //             errs: errors.array()
+        //         }
+        //     })
+        // }
 
         if (!req.body.email) {
             return res.status(400).json({ status: false, message: 'Please enter email address.' })
@@ -165,11 +171,25 @@ exports.forgotPwd = async (req, res) => {
 
     } catch (err) {
         console.log(err)
+        res.status(500).json({ status: false, message: 'Internal Server Error.' })
     }
 }
 
 exports.resetPwd = async (req, res) => {
     try {
+
+
+        // let errors = validationResult(req)
+        // if (errors.isEmpty) {
+        //     return res.status(400).json({
+        //         status: -1,
+        //         data: {
+        //             errs: errors.array()
+        //         }
+        //     })
+        // }
+
+
         const hashedToken = crypto.createHash('sha256').update(req.query.rt).digest('hex')
         const user = await User.findOne({
             pwdResetToken: hashedToken,
@@ -197,6 +217,7 @@ exports.resetPwd = async (req, res) => {
 
     } catch (err) {
         console.log(err)
+        res.status(500).json({ status: false, message: 'Internal Server Error.' })
     }
 
 }
@@ -209,13 +230,13 @@ exports.logout = async (req, res) => {
         })
 
         if (user) {
-            res.clearCookie('jwt')
-
+            res.removeHeader('Authorization')
             res.status(200).json({ status: true, message: 'You have logged out successfully.' })
         } else {
             return res.status(404).json({ status: false, message: 'User not found.' })
         }
     } catch (error) {
         console.log(error)
+        res.status(500).json({ status: false, message: 'Internal Server Error.' })
     }
 }

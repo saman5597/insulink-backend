@@ -1,5 +1,4 @@
 const connectDB = require('./config/db')
-const Logger = require('./config/Logger')
 
 process.on('uncaughtException', err => {
   console.log('Shutting down app...')

@@ -1,7 +1,7 @@
-const expressJWT = require('express-jwt')
+const { body, check } = require('express-validator')
 
-const authController = require('../controllers/authController.js')
-const authMiddleware = require('../middlewares/authMiddleware')
+const { signUp, loginUsingEmail, loginUsingMob, forgotPwd, resetPwd, logout } = require('../controllers/authController.js')
+const { isAuth, isUser, isAdmin, isSignedIn } = require('../middlewares/authMiddleware')
 
 const router = require('express').Router()
 
@@ -27,7 +27,19 @@ const router = require('express').Router()
  *       409:
  *         description: Duplicate data found.     
  */
-router.route('/signup').post(authController.signUp)
+router.post('/signup',
+    check('email', "Invalid email address.").isEmail().normalizeEmail(),
+    body('firstName', 'First name is required.').not().isEmpty().trim().escape(),
+    check('firstName', 'First name length should not be > 50.').isLength({ max: 50 }),
+    body('lastName', 'Last name is required.').not().isEmpty().trim().escape(),
+    check('lastName', 'Last name length should not be > 50.').isLength({ max: 50 }),
+    body('gender', 'Gender is required.').not().isEmpty(),
+    body('phone', 'Phone number is required.').not().isEmpty(),
+    body('country', 'Gender is required.').not().isEmpty().escape(),
+    check('password', "Empty password.").not().isEmpty().trim().bail(),
+    check('password', "Password length should not be < 6").isLength({ min: 6 }),
+    signUp
+)
 
 /**
  * @swagger
@@ -53,7 +65,11 @@ router.route('/signup').post(authController.signUp)
  *       404:
  *         description: Account does not exist.  
  */
-router.route('/loginUsingEmail').post(authController.loginUsingEmail)
+router.post('/loginUsingEmail',
+    body('email').isEmail().normalizeEmail(),
+    body('password').not().isEmpty().trim(),
+    loginUsingEmail
+)
 
 /**
  * @swagger
@@ -79,7 +95,11 @@ router.route('/loginUsingEmail').post(authController.loginUsingEmail)
  *       404:
  *         description: Account does not exist.  
  */
-router.route('/loginUsingMob').post(authController.loginUsingMob)
+router.post('/loginUsingMob',
+    body('phone').not().isEmpty().trim(),
+    body('password').not().isEmpty().trim(),
+    loginUsingMob
+)
 
 /**
  * @swagger
@@ -103,12 +123,21 @@ router.route('/loginUsingMob').post(authController.loginUsingMob)
  *       200:
  *         description: Reset URL in response   
  */
-router.route('/forgotPassword').post(authController.forgotPwd)
+router.post('/forgotPassword',
+    check('email', "Invalid email coming from route validation").isEmail().normalizeEmail(),
+    forgotPwd
+)
 
-router.route('/resetPassword').patch(authController.resetPwd)
+router.patch('/resetPassword',
+    [
+        check('password', "Empty password").not().isEmpty().trim().bail(),
+        check('password', "Password length < 6").isLength({ min: 6 })
+    ],
+    resetPwd
+)
 
 // Protected Routes starts here
-router.use(expressJWT({ secret: process.env.JWT_SECRET, requestProperty: 'auth', algorithms: ['sha1', 'RS256', 'HS256'] }), authMiddleware.checkAuth)
+router.use(isSignedIn, isAuth)
 
 /**
  * @swagger
@@ -123,6 +152,6 @@ router.use(expressJWT({ secret: process.env.JWT_SECRET, requestProperty: 'auth',
  *     security:
  *     - bearerAuth: []      
  */
-router.route('/logout').get(authController.logout)
+router.get('/logout', logout)
 
 module.exports = router

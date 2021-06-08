@@ -1,4 +1,6 @@
 const express = require('express')
+const fs = require('fs')
+const path = require('path')
 const morgan = require('morgan')
 const cors = require('cors')
 const swaggerJsDoc = require('swagger-jsdoc')
@@ -7,6 +9,9 @@ const { buildSchema } = require('graphql')
 const { graphqlHTTP } = require('express-graphql')
 require('dotenv').config({ path: './configuration.env' })
 const userRoute = require('./routes/userRoutes')
+const deviceRoute = require('./routes/deviceRoutes')
+const insulinRoute = require('./routes/insulinRoutes')
+const glucoseRoute = require('./routes/glucoseRoutes')
 const authRoute = require('./routes/authRoutes')
 const User = require('./models/userModel')
 const Device = require('./models/deviceModel')
@@ -19,7 +24,12 @@ app.use(cors()) //for CORS
 
 // Req meta-data development logging
 if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'))
+  app.use(
+    // only log error responses (4XX and 5XX)
+    morgan('dev', {
+      skip: function (req, res) { return res.statusCode < 400 }
+    })
+  )
 }
 
 // Body-parsing , reading data from body into req.body
@@ -29,7 +39,7 @@ app.use(express.json())
 app.use(function (req, res, next) {
   let ip = req.header('x-forwarded-for') || req.connection.remoteAddress
   req.ipAddress = ip.split(':').slice(-1)[0]
-  req.hostName = req.get('host') 
+  req.hostName = req.get('host')
   next()
 })
 
@@ -39,8 +49,11 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions)
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs))
 
 //Mounting the router
-app.use('/api/v1/users', userRoute)
 app.use('/api/v1/auth', authRoute)
+app.use('/api/v1/users', userRoute)
+app.use('/api/v1/devices', deviceRoute)
+app.use('/api/v1/insulin', insulinRoute)
+app.use('/api/v1/glucose', glucoseRoute)
 
 var graphqlSchema = buildSchema(`
   type User {

@@ -1,12 +1,12 @@
-const expressJWT = require('express-jwt')
+const { body } = require('express-validator')
 
-const userController = require('../controllers/userController.js')
-const authMiddleware = require('../middlewares/authMiddleware')
+const { getAllUsers, getLoggedInUser, changePassword, updateProfile, deactivateAccount, deleteAccount } = require('../controllers/userController.js')
+const { isAuth, isUser, isAdmin, isSignedIn } = require('../middlewares/authMiddleware')
 
 const router = require('express').Router()
 
 // Protected Routes starts here
-router.use(expressJWT({ secret: process.env.JWT_SECRET, requestProperty: 'auth', algorithms: ['sha1', 'RS256', 'HS256'] }), authMiddleware.checkAuth)
+router.use(isSignedIn, isAuth)
 
 /**
  * @swagger
@@ -17,7 +17,7 @@ router.use(expressJWT({ secret: process.env.JWT_SECRET, requestProperty: 'auth',
  *       200:
  *         description: Array of users.      
  */
-router.route('/').get(authMiddleware.authorizeTo(1), userController.getAllUsers)
+router.get('/', isAdmin, getAllUsers)
 
 /**
  * @swagger
@@ -30,7 +30,7 @@ router.route('/').get(authMiddleware.authorizeTo(1), userController.getAllUsers)
  *     security:
  *     - bearerAuth: []    
  */
-router.route('/myProfile').get(userController.getLoggedInUser)
+router.get('/myProfile', getLoggedInUser)
 
 /**
  * @swagger
@@ -58,7 +58,10 @@ router.route('/myProfile').get(userController.getLoggedInUser)
  *     security:
  *     - bearerAuth: []      
  */
-router.route('/changePassword').post(userController.changePassword)
+router.post('/changePassword', body('passwordOld').not().isEmpty().trim(),
+    body('passwordUpdated').not().isEmpty().trim(),
+    changePassword
+)
 
 /**
  * @swagger
@@ -86,7 +89,13 @@ router.route('/changePassword').post(userController.changePassword)
  *     security:
  *     - bearerAuth: []      
  */
-router.route('/updateProfile').put(userController.updateProfile)
+router.put('/updateProfile',
+    body('firstName').not().isEmpty().trim().escape(),
+    body('lastName').not().isEmpty().trim().escape(),
+    body('country').not().isEmpty().escape(),
+    body('gender').not().isEmpty(),
+    updateProfile
+)
 
 
 /**
@@ -102,7 +111,7 @@ router.route('/updateProfile').put(userController.updateProfile)
  *     security:
  *     - bearerAuth: []      
  */
-router.route('/deactivateAccount').post(userController.deactivateAccount)
+router.post('/deactivateAccount', deactivateAccount)
 
 /**
  * @swagger
@@ -117,6 +126,6 @@ router.route('/deactivateAccount').post(userController.deactivateAccount)
  *     security:
  *     - bearerAuth: []      
  */
-router.route('/deleteAccount').delete(userController.deleteAccount)
+router.delete('/deleteAccount', deleteAccount)
 
 module.exports = router

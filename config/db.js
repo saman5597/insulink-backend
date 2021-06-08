@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const Logger = require('./Logger')
 
 function connectToDB() {
 

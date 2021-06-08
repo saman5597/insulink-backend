@@ -1,4 +1,3 @@
-const Logger = require('../config/Logger')
 const User = require('../models/userModel')
 const Device = require('../models/deviceModel')
 
@@ -13,6 +12,7 @@ exports.getAllUsers = async (req, res) => {
         res.status(200).json({ status: true, users })
     } catch (error) {
         console.log(error)
+        res.status(500).json({ status: false, message: 'Internal Server Error.' })
     }
 }
 
@@ -26,6 +26,7 @@ exports.getLoggedInUser = async (req, res) => {
         res.status(200).json({ status: true, user })
     } catch (error) {
         console.log(error)
+        res.status(500).json({ status: false, message: 'Internal Server Error.' })
     }
 }
 
@@ -63,6 +64,7 @@ exports.changePassword = async (req, res) => {
 
     } catch (err) {
         console.log(err)
+        res.status(500).json({ status: false, message: 'Internal Server Error.' })
     }
 }
 
@@ -126,6 +128,7 @@ exports.deactivateAccount = async (req, res) => {
         }
     } catch (error) {
         console.log(error)
+        res.status(500).json({ status: false, message: 'Internal Server Error.' })
     }
 }
 
@@ -145,5 +148,6 @@ exports.deleteAccount = async (req, res) => {
         }
     } catch (error) {
         console.log(error)
+        res.status(500).json({ status: false, message: 'Internal Server Error.' })
     }
 }
