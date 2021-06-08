@@ -4,10 +4,10 @@ const schemaOptions = {
   timestamps: true,
   id: false,
   toJSON: {
-    virtuals: true
+    virtuals: false
   },
   toObject: {
-    virtuals: true
+    virtuals: false
   }
 }
 
@@ -26,17 +26,17 @@ const glucoseSchema = new mongoose.Schema(
       required: [true, 'Glucose reading is required.']
     },
     readingType: {
-      type: String,
+      type: Number,
       required: [true, 'Glucose reading type is required.'],
-      enum: ['N', 'F']
+      enum: [0, 1, 2]  // 0 -> Fasting, 1 -> Non - fasting, 2 -> Random
     },
     device: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Device"
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Device"
     },
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
     }
   },
   schemaOptions

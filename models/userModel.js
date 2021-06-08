@@ -6,10 +6,10 @@ const schemaOptions = {
   timestamps: true,
   id: false,
   toJSON: {
-    virtuals: true
+    virtuals: false
   },
   toObject: {
-    virtuals: true
+    virtuals: false
   }
 }
 
