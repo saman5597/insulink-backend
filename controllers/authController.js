@@ -21,7 +21,9 @@ const createJWT = (userId, statusCode, message, res) => {
 
     res.status(statusCode).json({
         status: true,
-        token,
+        data: {
+            token,
+        },
         message
     })
 }
@@ -31,7 +33,7 @@ exports.signUp = async (req, res) => {
         const { firstName, lastName, email, phone, gender, country, password } = req.body
 
         if (!firstName || !lastName || !email || !phone || !gender || !country || !password) {
-            return res.status(400).json({ status: false, message: 'Invalid data.' })
+            return res.status(400).json({ status: false, data: { payload: req.body }, message: 'Invalid data.' })
         }
 
         const user = User({
@@ -54,10 +56,10 @@ exports.signUp = async (req, res) => {
 
         //handling duplicate key
         if (err && err.code === 11000) {
-            return res.status(409).json({ status: false, message: 'Duplicate data found.' })
+            return res.status(409).json({ status: false, data: { payload: req.body }, message: 'Duplicate data found.' })
         }
 
-        return res.status(400).json({ status: false, message: err.message })
+        return res.status(400).json({ status: false, data: { err }, message: err.message })
 
     }
 }
@@ -68,7 +70,7 @@ exports.loginUsingEmail = async (req, res) => {
         const { email, password } = req.body
 
         if (!email || !password) {
-            return res.status(400).json({ status: false, message: 'Please enter your credentials.' })
+            return res.status(400).json({ status: false, data: { payload: req.body }, message: 'Please enter your credentials.' })
         }
 
         var user
@@ -76,7 +78,7 @@ exports.loginUsingEmail = async (req, res) => {
             user = await User.findOne({ email }).select('+password')
             if (user) {
                 if (!user || !(user.comparePassword(password, user.password))) {
-                    return res.status(401).json({ status: false, message: 'Incorrect credentials.' })
+                    return res.status(401).json({ status: false, data: { payload: req.body }, message: 'Incorrect credentials.' })
                 }
 
                 const loggedUser = await User.updateOne({ email }, { $set: { status: 'active' } })
@@ -84,13 +86,13 @@ exports.loginUsingEmail = async (req, res) => {
                 createJWT(user._id, 200, 'User logged in successfully.', res)
 
             } else {
-                return res.status(404).json({ status: false, message: 'Account does not exist. Please register first.' })
+                return res.status(404).json({ status: false, data: { payload: req.body }, message: 'Account does not exist. Please register first.' })
             }
         }
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: false, message: 'Internal Server Error.' })
+        res.status(500).json({ status: false, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -100,7 +102,7 @@ exports.loginUsingMob = async (req, res) => {
         const { phone, password } = req.body
 
         if (!phone || !password) {
-            return res.status(400).json({ status: false, message: 'Please enter your credentials.' })
+            return res.status(400).json({ status: false, data: { payload: req.body }, message: 'Please enter your credentials.' })
         }
 
         var user
@@ -108,7 +110,7 @@ exports.loginUsingMob = async (req, res) => {
             user = await User.findOne({ phone }).select('+password')
             if (user) {
                 if (!user || !(user.comparePassword(password, user.password))) {
-                    return res.status(401).json({ status: false, message: 'Incorrect credentials.' })
+                    return res.status(401).json({ status: false, data: { payload: req.body }, message: 'Incorrect credentials.' })
                 }
 
                 const loggedUser = await User.updateOne({ phone }, { $set: { status: 'active' } })
@@ -116,13 +118,13 @@ exports.loginUsingMob = async (req, res) => {
                 createJWT(user._id, 200, 'User logged in successfully.', res)
 
             } else {
-                return res.status(404).json({ status: false, message: 'Account does not exist. Please register first.' })
+                return res.status(404).json({ status: false, data: { payload: req.body }, message: 'Account does not exist. Please register first.' })
             }
         }
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: false, message: 'Internal Server Error.' })
+        res.status(500).json({ status: false, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -140,7 +142,7 @@ exports.forgotPwd = async (req, res) => {
         // }
 
         if (!req.body.email) {
-            return res.status(400).json({ status: false, message: 'Please enter email address.' })
+            return res.status(400).json({ status: false, data: { payload: req.body }, message: 'Please enter email address.' })
         }
 
         const user = await User.findOne({ email: req.body.email })
@@ -151,7 +153,7 @@ exports.forgotPwd = async (req, res) => {
         const linkExpireTime = Date.now() + 2 * 60 * 1000 // 2 minutes expiry time
 
         if (!user) {
-            return res.status(404).json({ status: false, message: 'No user found with this email address.' })
+            return res.status(404).json({ status: false, data: { payload: req.body }, message: 'No user found with this email address.' })
         }
 
         const currentUser = await User.updateOne({ email: req.body.email }, { $set: { pwdResetToken, linkExpireTime } })
@@ -167,11 +169,11 @@ exports.forgotPwd = async (req, res) => {
             html: "<h2>Reset URL Valid for 2 minutes</h2>"
         })
 
-        res.status(200).json({ status: true, link: resetURL })
+        res.status(200).json({ status: true, data: { link: resetURL }, message: 'Reset URL sent via mail' })
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: false, message: 'Internal Server Error.' })
+        res.status(500).json({ status: false, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -199,7 +201,7 @@ exports.resetPwd = async (req, res) => {
         if (user) {
 
             if (!req.body.password) {
-                return res.status(400).json({ status: false, message: 'Please enter new password.' })
+                return res.status(400).json({ status: false, data: { payload: req.body }, message: 'Please enter new password.' })
             }
 
             user.pass = req.body.password
@@ -209,15 +211,15 @@ exports.resetPwd = async (req, res) => {
 
             await user.save()
 
-            res.status(200).json({ status: true, message: 'Password updated successfully.' })
+            res.status(200).json({ status: true, data: { user }, message: 'Password updated successfully.' })
 
         } else {
-            return res.status(400).json({ status: false, message: 'Link expired.' })
+            return res.status(400).json({ status: false, data: { payload: req.body }, message: 'Link expired.' })
         }
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: false, message: 'Internal Server Error.' })
+        res.status(500).json({ status: false, data: { err }, message: 'Internal Server Error.' })
     }
 
 }
@@ -231,12 +233,12 @@ exports.logout = async (req, res) => {
 
         if (user) {
             res.removeHeader('Authorization')
-            res.status(200).json({ status: true, message: 'You have logged out successfully.' })
+            res.status(200).json({ status: true, data: { user }, message: 'You have logged out successfully.' })
         } else {
-            return res.status(404).json({ status: false, message: 'User not found.' })
+            return res.status(404).json({ status: false, data: { user }, message: 'User not found.' })
         }
     } catch (error) {
         console.log(error)
-        res.status(500).json({ status: false, message: 'Internal Server Error.' })
+        res.status(500).json({ status: false, data: { err }, message: 'Internal Server Error.' })
     }
 }
