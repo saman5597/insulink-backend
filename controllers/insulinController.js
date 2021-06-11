@@ -20,7 +20,7 @@ exports.getBasalByDateRange = async (req, res) => {
 
         const basalData = await Basal.find(queryObj)
         console.log(basalData)
-        res.status(200).json({ status: true, data: basalData })
+        res.status(200).json({ status: true, data: { basal: basalData }, message: 'Basal data for a particular date range.' })
 
     } catch (error) {
         console.log(error)
@@ -38,7 +38,7 @@ exports.getBasalByDate = async (req, res) => {
         }
         const basalData = await Basal.find(queryObj)
         console.log(basalData)
-        res.status(200).json({ status: true, data: basalData })
+        res.status(200).json({ status: true, data: { basal: basalData }, message: 'Basal data for a particular date.' })
 
     } catch (error) {
         console.log(error)
@@ -50,7 +50,7 @@ exports.getBasalByUID = async (req, res) => {
     try {
         const basalData = await Basal.find({ user: req.params.uid })
         console.log(basalData)
-        res.status(200).json({ status: true, data: basalData })
+        res.status(200).json({ status: true, data: { basal: basalData }, message: 'Basal data for a particular user.' })
 
     } catch (error) {
         console.log(error)
@@ -76,7 +76,7 @@ exports.getBolusByDateRange = async (req, res) => {
 
         const bolusData = await Bolus.find(queryObj)
         console.log(bolusData)
-        res.status(200).json({ status: true, data: bolusData })
+        res.status(200).json({ status: true, data: { bolus: bolusData }, message: 'Bolus data for a particular date range.' })
 
     } catch (error) {
         console.log(error)
@@ -94,7 +94,7 @@ exports.getBolusByDate = async (req, res) => {
         }
         const bolusData = await Bolus.find(queryObj)
         console.log(bolusData)
-        res.status(200).json({ status: true, data: bolusData })
+        res.status(200).json({ status: true, data: { bolus: bolusData }, message: 'Bolus data for a particular date.' })
 
     } catch (error) {
         console.log(error)
@@ -106,7 +106,7 @@ exports.getBolusByUID = async (req, res) => {
     try {
         const bolusData = await Bolus.find({ user: req.params.uid })
         console.log(bolusData)
-        res.status(200).json({ status: true, data: bolusData })
+        res.status(200).json({ status: true, data: { bolus: bolusData }, message: 'Basal data for a particular user.' })
 
     } catch (error) {
         console.log(error)
