@@ -9,7 +9,7 @@ exports.getAllUsers = async (req, res) => {
             // match: { modelName: { $ne: 'pro' } }
         })
 
-        res.status(200).json({ status: true, data: { users }, message: 'Getting data of all users from the DB.' })
+        res.status(200).json({ status: true, data: { users }, message: 'Getting data of all users from DB.' })
     } catch (error) {
         console.log(error)
         res.status(500).json({ status: false, data: { err }, message: 'Internal Server Error.' })
@@ -23,7 +23,7 @@ exports.getLoggedInUser = async (req, res) => {
             select: "-users"
         })
 
-        res.status(200).json({ status: true, data: { user }, message: 'Getting data of logged in user from the DB.' })
+        res.status(200).json({ status: true, data: { user }, message: 'Getting data of logged in user from DB.' })
     } catch (error) {
         console.log(error)
         res.status(500).json({ status: false, data: { err }, message: 'Internal Server Error.' })

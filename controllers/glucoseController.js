@@ -22,7 +22,7 @@ exports.getGlucoseByDateRange = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({ status: false, message: 'Internal Server Error.' })
+        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
     }
 }
 
@@ -40,7 +40,7 @@ exports.getGlucoseByDate = async (req, res) => {
         
     } catch (error) {
         console.log(error)
-        res.status(500).json({ status: false, message: 'Internal Server Error.' })
+        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
     }
 }
 
@@ -52,6 +52,6 @@ exports.getGlucoseByUID = async (req, res) => {
         
     } catch (error) {
         console.log(error)
-        res.status(500).json({ status: false, message: 'Internal Server Error.' })
+        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
     }
 }

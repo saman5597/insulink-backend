@@ -24,7 +24,7 @@ exports.getBasalByDateRange = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({ status: false, message: 'Internal Server Error.' })
+        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
     }
 }
 
@@ -42,7 +42,7 @@ exports.getBasalByDate = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({ status: false, message: 'Internal Server Error.' })
+        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
     }
 }
 
@@ -54,7 +54,7 @@ exports.getBasalByUID = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({ status: false, message: 'Internal Server Error.' })
+        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
     }
 }
 
@@ -80,7 +80,7 @@ exports.getBolusByDateRange = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({ status: false, message: 'Internal Server Error.' })
+        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
     }
 }
 
@@ -98,7 +98,7 @@ exports.getBolusByDate = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({ status: false, message: 'Internal Server Error.' })
+        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
     }
 }
 
@@ -110,7 +110,7 @@ exports.getBolusByUID = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({ status: false, message: 'Internal Server Error.' })
+        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
     }
 }
 
@@ -176,6 +176,6 @@ exports.getReport = async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({ status: false, message: 'Internal Server Error.' })
+        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
     }
 }
