@@ -145,7 +145,7 @@ exports.deleteAccount = async (req, res) => {
             res.status(204).json({ status: true, data: {}, message: 'Account Deleted.' })
 
         } else {
-            return res.status(404).json({ status: false, data: {}, message: 'User not found.' })
+            return res.status(404).json({ status: false, data: { user }, message: 'User not found.' })
         }
     } catch (error) {
         console.log(error)
