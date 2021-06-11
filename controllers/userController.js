@@ -9,7 +9,7 @@ exports.getAllUsers = async (req, res) => {
             // match: { modelName: { $ne: 'pro' } }
         })
 
-        res.status(200).json({ status: true, data: { users }, message: 'Getting data of all users from DB.' })
+        res.status(200).json({ status: true, data: { userData: users }, message: 'Getting data of all users from DB.' })
     } catch (error) {
         console.log(error)
         res.status(500).json({ status: false, data: { err }, message: 'Internal Server Error.' })
