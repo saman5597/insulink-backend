@@ -13,16 +13,25 @@ const signToken = id => {
     })
 }
 
-const createJWT = (userId, statusCode, message, res) => {
+const createJWT = (user, statusCode, message, res) => {
 
-    const token = signToken(userId)
+    const token = signToken(user._id)
 
     res.header('Authorization', `Bearer  ${token}`)
 
     res.status(statusCode).json({
         status: true,
         data: {
-            token,
+            user: {
+                firstName: user.firstName,
+                status: user.status,
+                lastName: user.lastName,
+                phone: user.phone,
+                email: user.email,
+                gender: user.gender,
+                country: user.country,
+                token
+            }
         },
         message
     })
@@ -48,8 +57,7 @@ exports.signUp = async (req, res) => {
 
         await user.save()
 
-        createJWT(user._id, 201, "User signed up successfully.", res)
-
+        createJWT(user, 201, "User signed up successfully.", res)
     } catch (err) {
 
         console.log(err.message)
@@ -83,7 +91,7 @@ exports.loginUsingEmail = async (req, res) => {
 
                 const loggedUser = await User.updateOne({ email }, { $set: { status: 'active' } })
 
-                createJWT(user._id, 200, 'User logged in successfully.', res)
+                createJWT(user, 200, 'User logged in successfully.', res)
 
             } else {
                 return res.status(404).json({ status: false, data: { payload: req.body }, message: 'Account does not exist. Please register first.' })
@@ -115,7 +123,7 @@ exports.loginUsingMob = async (req, res) => {
 
                 const loggedUser = await User.updateOne({ phone }, { $set: { status: 'active' } })
 
-                createJWT(user._id, 200, 'User logged in successfully.', res)
+                createJWT(user, 200, 'User logged in successfully.', res)
 
             } else {
                 return res.status(404).json({ status: false, data: { payload: req.body }, message: 'Account does not exist. Please register first.' })
