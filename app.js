@@ -1,6 +1,4 @@
 const express = require('express')
-const fs = require('fs')
-const path = require('path')
 const morgan = require('morgan')
 const cors = require('cors')
 const swaggerJsDoc = require('swagger-jsdoc')
@@ -31,6 +29,13 @@ if (process.env.NODE_ENV === 'development') {
     })
   )
 }
+// else {
+//   morgan.token("authtoken", (req, res) => {
+//     return req.headers["authorization"].split("Bearer")[1]
+//   })
+
+//   app.use(morgan("token[:authtoken] - :method :url | :status (time taken - :response-time ms)"))
+// }
 
 // Body-parsing , reading data from body into req.body
 app.use(express.json())

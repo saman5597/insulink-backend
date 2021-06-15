@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema(
       validate: [validator.isEmail, 'Please provide a valid email address.']
     },
     phone: {
-      type: Number,
+      type: String,
       required: [true, 'Phone number is required.'],
       unique: true,
       validate: {
