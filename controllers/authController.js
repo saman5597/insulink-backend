@@ -30,6 +30,8 @@ const createJWT = (user, statusCode, message, res) => {
                 email: user.email,
                 gender: user.gender,
                 country: user.country,
+                role: user.role,
+                status: user.status,
                 token
             }
         },
