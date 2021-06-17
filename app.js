@@ -99,7 +99,8 @@ app.use('/graphql', graphqlHTTP({
 // 404 handling Route
 app.all('*', (req, res) => {
   res.status(404).json({
-    status: false,
+    status: 0,
+    data: {},
     message: `Can't find ${req.originalUrl} on this server!`
   })
 })

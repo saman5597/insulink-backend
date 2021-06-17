@@ -18,11 +18,11 @@ exports.getGlucoseByDateRange = async (req, res) => {
 
         const glucoseData = await Glucose.find(queryObj)
         console.log(glucoseData)
-        res.status(200).json({ status: true, data: { glucose: glucoseData }, message: 'Glucose data for a particular date range.' })
+        res.status(200).json({ status: 1, data: { glucose: glucoseData }, message: 'Glucose data for a particular date range.' })
 
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -36,11 +36,11 @@ exports.getGlucoseByDate = async (req, res) => {
         }
         const glucoseData = await Glucose.find(queryObj)
         console.log(glucoseData)
-        res.status(200).json({ status: true, data: { glucose: glucoseData }, message: 'Glucose data for a particular date.' })
+        res.status(200).json({ status: 1, data: { glucose: glucoseData }, message: 'Glucose data for a particular date.' })
 
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -48,10 +48,10 @@ exports.getGlucoseByUID = async (req, res) => {
     try {
         const glucoseData = await Glucose.find({ user: req.params.uid })
         console.log(glucoseData)
-        res.status(200).json({ status: true, data: { glucose: glucoseData }, message: 'Glucose data for a particular user.' })
+        res.status(200).json({ status: 1, data: { glucose: glucoseData }, message: 'Glucose data for a particular user.' })
 
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }

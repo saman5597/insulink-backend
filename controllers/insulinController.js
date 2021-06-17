@@ -20,11 +20,11 @@ exports.getBasalByDateRange = async (req, res) => {
 
         const basalData = await Basal.find(queryObj)
         console.log(basalData)
-        res.status(200).json({ status: true, data: { basal: basalData }, message: 'Basal data for a particular date range.' })
+        res.status(200).json({ status: 1, data: { basal: basalData }, message: 'Basal data for a particular date range.' })
 
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -38,11 +38,11 @@ exports.getBasalByDate = async (req, res) => {
         }
         const basalData = await Basal.find(queryObj)
         console.log(basalData)
-        res.status(200).json({ status: true, data: { basal: basalData }, message: 'Basal data for a particular date.' })
+        res.status(200).json({ status: 1, data: { basal: basalData }, message: 'Basal data for a particular date.' })
 
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -50,11 +50,11 @@ exports.getBasalByUID = async (req, res) => {
     try {
         const basalData = await Basal.find({ user: req.params.uid })
         console.log(basalData)
-        res.status(200).json({ status: true, data: { basal: basalData }, message: 'Basal data for a particular user.' })
+        res.status(200).json({ status: 1, data: { basal: basalData }, message: 'Basal data for a particular user.' })
 
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -76,11 +76,11 @@ exports.getBolusByDateRange = async (req, res) => {
 
         const bolusData = await Bolus.find(queryObj)
         console.log(bolusData)
-        res.status(200).json({ status: true, data: { bolus: bolusData }, message: 'Bolus data for a particular date range.' })
+        res.status(200).json({ status: 1, data: { bolus: bolusData }, message: 'Bolus data for a particular date range.' })
 
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -94,11 +94,11 @@ exports.getBolusByDate = async (req, res) => {
         }
         const bolusData = await Bolus.find(queryObj)
         console.log(bolusData)
-        res.status(200).json({ status: true, data: { bolus: bolusData }, message: 'Bolus data for a particular date.' })
+        res.status(200).json({ status: 1, data: { bolus: bolusData }, message: 'Bolus data for a particular date.' })
 
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -106,11 +106,11 @@ exports.getBolusByUID = async (req, res) => {
     try {
         const bolusData = await Bolus.find({ user: req.params.uid })
         console.log(bolusData)
-        res.status(200).json({ status: true, data: { bolus: bolusData }, message: 'Basal data for a particular user.' })
+        res.status(200).json({ status: 1, data: { bolus: bolusData }, message: 'Basal data for a particular user.' })
 
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -174,8 +174,8 @@ exports.getReport = async (req, res) => {
             }
         ])
 
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }

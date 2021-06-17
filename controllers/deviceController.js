@@ -76,13 +76,13 @@ exports.uploadDeviceData = async (req, res) => {
         const bolusData = await Bolus.insertMany(bolusArr)            // Bolus Data
         const basalData = await Basal.insertMany(basalArr)            // Basal Data
 
-        res.status(201).json({ status: true, data: {}, message: 'Data uploaded successfully.' })
+        res.status(201).json({ status: 1, data: {}, message: 'Data uploaded successfully.' })
 
-    } catch (error) {
-        console.log(error)
+    } catch (err) {
+        console.log(err)
         await session.abortTransaction()
         session.endSession()
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -93,10 +93,10 @@ exports.getAllDevices = async (req, res) => {
             select: "-devices"
         })
 
-        res.status(200).json({ status: true, data: { devices }, message: 'Getting data of all devices from DB.' })
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+        res.status(200).json({ status: 1, data: { devices }, message: 'Getting data of all devices from DB.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -107,10 +107,10 @@ exports.getDeviceByDID = async (req, res) => {
             select: "-devices"
         })
 
-        res.status(200).json({ status: true, data: { device }, message: 'Getting data of device by device ID from DB.' })
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+        res.status(200).json({ status: 1, data: { device }, message: 'Getting data of device by device ID from DB.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -120,7 +120,7 @@ exports.createDevice = async (req, res) => {
 
         let errors = validationResult(req)
         if (errors.isEmpty) {
-            return res.status(400).json({ status: false, data: { errors: errors.array() }, message: 'Validation error.' })
+            return res.status(400).json({ status: 0, data: { err: errors.array() }, message: 'Validation error.' })
         }
 
         const device = Device({
@@ -131,10 +131,10 @@ exports.createDevice = async (req, res) => {
 
         await device.save()
 
-        res.status(201).json({ status: true, data: { device }, message: 'Device created successfully.' })
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+        res.status(201).json({ status: 1, data: { device }, message: 'Device created successfully.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -149,13 +149,13 @@ exports.updateDeviceByDID = async (req, res) => {
         })
 
         res.status(200).json({
-            status: 'success',
+            status: 1,
             data: { user: updatedUser },
             message: 'Device details updated successfully.'
         })
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
         /* 
         400 - Bad Request
         401 - Unauthorised
@@ -180,13 +180,13 @@ exports.updateDevice = async (req, res) => {
         })
 
         res.status(200).json({
-            status: 'success',
+            status: 1,
             data: { user: updatedUser },
             message: 'Device details updated successfully.'
         })
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -194,9 +194,9 @@ exports.deleteDeviceByDID = async (req, res) => {
     try {
         const device = await Device.deleteOne({ _id: req.params.did })
 
-        res.status(204).json({ status: true, data: {}, message: 'Device deleted.' })
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { error }, message: 'Internal Server Error.' })
+        res.status(204).json({ status: 1, data: {}, message: 'Device deleted.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }

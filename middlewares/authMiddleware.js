@@ -15,7 +15,7 @@ exports.isAuth = async (err, req, res, next) => {
     if (err) {
       if (err.name === 'UnauthorizedError') {
         return res.status(401).send({
-          success: false,
+          status: 0,
           data: { err },
           message: 'Not authenticated.'
         })
@@ -23,13 +23,13 @@ exports.isAuth = async (err, req, res, next) => {
     }
 
     if (!req.auth) {
-      return res.status(401).json({ status: false, data: {}, message: 'You are not logged in. Please login.' })
+      return res.status(401).json({ status: 0, data: {}, message: 'You are not logged in. Please login.' })
     }
 
     const currentUser = await User.findById(req.auth.id)
 
     if (!currentUser) {
-      return res.status(401).json({ status: false, data: {}, message: 'The user belonging to the token does no longer exist.' })
+      return res.status(401).json({ status: 0, data: {}, message: 'The user belonging to the token does no longer exist.' })
     }
 
     next()
@@ -47,15 +47,9 @@ function authorizeTo(role) {
   return async (req, res, next) => {
 
     const currentUser = await User.findById(req.auth.id)
-    if (currentUser) {
-      if (role !== currentUser.role) {
-        return res.status(403).json({ status: false, data: {}, message: 'You do not have permission to perform this action.' })
-      }
-      next()
+    if (role !== currentUser.role) {
+      return res.status(403).json({ status: 0, data: {}, message: 'You do not have permission to perform this action.' })
     }
-    else {
-      return res.status(401).json({ status: false, data: {}, message: 'Not authenticated.' })
-      next()
-    }
+    next()
   }
 }

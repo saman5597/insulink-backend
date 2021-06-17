@@ -9,10 +9,10 @@ exports.getAllUsers = async (req, res) => {
             // match: { modelName: { $ne: 'pro' } }
         })
 
-        res.status(200).json({ status: true, data: { userData: users }, message: 'Getting data of all users from DB.' })
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { err }, message: 'Internal Server Error.' })
+        res.status(200).json({ status: 1, data: { userData: users }, message: 'Getting data of all users from DB.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -23,10 +23,10 @@ exports.getLoggedInUser = async (req, res) => {
             select: "-users"
         })
 
-        res.status(200).json({ status: true, data: { user }, message: 'Getting data of logged in user from DB.' })
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { err }, message: 'Internal Server Error.' })
+        res.status(200).json({ status: 1, data: { user }, message: 'Getting data of logged in user from DB.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -41,15 +41,15 @@ exports.changePassword = async (req, res) => {
 
         if (user) {
             if (!passwordOld) {
-                return res.status(400).json({ status: false, data: { payload: req.body }, message: 'Please enter your current password.' })
+                return res.status(400).json({ status: 0, data: { payload: req.body }, message: 'Please enter your current password.' })
             }
 
             if (!(await user.comparePassword(passwordOld, user.password))) {
-                return res.status(401).json({ status: false, data: { payload: req.body }, message: 'Your current password is incorrect.' })
+                return res.status(401).json({ status: 0, data: { payload: req.body }, message: 'Your current password is incorrect.' })
             }
 
             if (!passwordUpdated) {
-                return res.status(400).json({ status: false, data: { payload: req.body }, message: 'Please enter your new password.' })
+                return res.status(400).json({ status: 0, data: { payload: req.body }, message: 'Please enter your new password.' })
             }
 
             user.pass = passwordUpdated
@@ -57,14 +57,14 @@ exports.changePassword = async (req, res) => {
 
             await user.save()
 
-            res.status(200).json({ status: true, data: { user }, message: 'Password changed successfully.' })
+            res.status(200).json({ status: 1, data: { user }, message: 'Password changed successfully.' })
         } else {
-            return res.status(404).json({ status: false, data: { user }, message: 'User not found.' })
+            return res.status(404).json({ status: 0, data: { payload: user }, message: 'User not found.' })
         }
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: false, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -97,17 +97,17 @@ exports.updateProfile = async (req, res) => {
                 message: 'User details updated successfully.'
             })
         } else {
-            return res.status(404).json({ status: false, data: { user }, message: 'User not found.' })
+            return res.status(404).json({ status: 0, data: { payload: user }, message: 'User not found.' })
         }
 
-    } catch (error) {
-        console.log(error)
+    } catch (err) {
+        console.log(err)
 
-        if (error.code === 11000) {
-            return res.status(409).json({ status: false, data: { payload: req.body }, message: `${error.codeName} error` })
+        if (err.code === 11000) {
+            return res.status(409).json({ status: 0, data: { payload: req.body }, message: `${err.codeName} error` })
         }
 
-        return res.status(400).json({ status: false, data: { error }, message: error._message })
+        return res.status(400).json({ status: 0, data: { err }, message: err._message })
     }
 }
 
@@ -122,14 +122,14 @@ exports.deactivateAccount = async (req, res) => {
 
             const userData = await User.updateOne({ _id: req.auth.id }, { $set: { status: 'inactive' } })
 
-            res.status(200).json({ status: true, data: { user }, message: 'Account deactivated.' })
+            res.status(200).json({ status: 1, data: { user }, message: 'Account deactivated.' })
 
         } else {
-            return res.status(404).json({ status: false, data: { user }, message: 'User not found.' })
+            return res.status(404).json({ status: 0, data: { payload: user }, message: 'User not found.' })
         }
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { err }, message: 'Internal Server Error.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
 
@@ -142,13 +142,13 @@ exports.deleteAccount = async (req, res) => {
         if (user) {
             const deletedUser = await User.deleteOne({ _id: req.auth.id })
 
-            res.status(204).json({ status: true, data: {}, message: 'Account Deleted.' })
+            res.status(204).json({ status: 1, data: {}, message: 'Account Deleted.' })
 
         } else {
-            return res.status(404).json({ status: false, data: { user }, message: 'User not found.' })
+            return res.status(404).json({ status: 0, data: { payload: user }, message: 'User not found.' })
         }
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ status: false, data: { err }, message: 'Internal Server Error.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
     }
 }
