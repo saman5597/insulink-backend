@@ -47,10 +47,15 @@ function authorizeTo(role) {
   return async (req, res, next) => {
 
     const currentUser = await User.findById(req.auth.id)
-
-    if (role !== currentUser.role) {
-      return res.status(403).json({ status: false, data: {}, message: 'You do not have permission to perform this action.' })
+    if (currentUser) {
+      if (role !== currentUser.role) {
+        return res.status(403).json({ status: false, data: {}, message: 'You do not have permission to perform this action.' })
+      }
+      next()
     }
-    next()
+    else {
+      return res.status(401).json({ status: false, data: {}, message: 'Not authenticated.' })
+      next()
+    }
   }
 }

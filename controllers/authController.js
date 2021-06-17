@@ -64,7 +64,7 @@ exports.signUp = async (req, res) => {
 
         //handling duplicate key
         if (err && err.code === 11000) {
-            return res.status(409).json({ status: false, data: { payload: req.body }, message: 'Duplicate data found.' })
+            return res.status(409).json({ status: false, data: { payload: req.body }, message: 'User already exists.' })
         }
 
         return res.status(400).json({ status: false, data: { err }, message: err.message })
