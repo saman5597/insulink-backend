@@ -34,8 +34,8 @@ exports.isAuth = async (err, req, res, next) => {
 
     next()
 
-  } catch (err) {
-    console.log(err)
+  } catch (error) {
+    console.log(error)
   }
 
 }

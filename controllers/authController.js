@@ -42,10 +42,6 @@ exports.signUp = async (req, res) => {
     try {
         const { firstName, lastName, email, phone, gender, country, password } = req.body
 
-        if (!firstName || !lastName || !email || !phone || !gender || !country || !password) {
-            return res.status(400).json({ status: 0, data: { payload: req.body }, message: 'Invalid data.' })
-        }
-
         const user = User({
             firstName,
             lastName,
@@ -65,10 +61,30 @@ exports.signUp = async (req, res) => {
 
         //handling duplicate key
         if (err && err.code === 11000) {
-            return res.status(409).json({ status: 0, data: { payload: req.body }, message: 'User already exists.' })
+            return res.status(409).json({
+                status: 0,
+                data: {
+                    err: {
+                        generatedTime: new Date(),
+                        errMsg: 'User already exists.',
+                        msg: err.message,
+                        errType: 'DuplicateKeyError'
+                    }
+                }
+            })
         }
 
-        return res.status(400).json({ status: 0, data: { err }, message: err.message })
+        return res.status(400).json({
+            status: 0,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: 'Invalid data.',
+                    msg: err.message,
+                    errType: 'ValidationError'
+                }
+            }
+        })
 
     }
 }
@@ -79,7 +95,17 @@ exports.loginUsingEmail = async (req, res) => {
         const { email, password } = req.body
 
         if (!email || !password) {
-            return res.status(400).json({ status: 0, data: { payload: req.body }, message: 'Please enter your credentials.' })
+            return res.status(400).json({
+                status: 0,
+                data: {
+                    err: {
+                        generatedTime: new Date(),
+                        errMsg: 'Please enter your credentials.',
+                        msg: 'Please enter your credentials.',
+                        errType: 'ValidationError'
+                    }
+                }
+            })
         }
 
         var user
@@ -87,15 +113,36 @@ exports.loginUsingEmail = async (req, res) => {
             user = await User.findOne({ email }).select('+password')
             if (user) {
                 if (!user || !(user.comparePassword(password, user.password))) {
-                    return res.status(401).json({ status: 0, data: { payload: req.body }, message: 'Incorrect credentials.' })
+                    return res.status(401).json({
+                        status: 0,
+                        data: {
+                            err: {
+                                generatedTime: new Date(),
+                                errMsg: 'Incorrect credentials.',
+                                msg: 'Incorrect credentials.',
+                                errType: 'AuthenticationError'
+                            }
+                        }
+                    })
                 }
 
                 const loggedUser = await User.updateOne({ email }, { $set: { status: 'active' } })
 
                 createJWT(user, 200, 'User logged in successfully.', res)
 
-            } else {
-                return res.status(404).json({ status: 0, data: { payload: req.body }, message: 'Account does not exist. Please register first.' })
+            }
+            else {
+                return res.status(404).json({
+                    status: 0,
+                    data: {
+                        err: {
+                            generatedTime: new Date(),
+                            errMsg: 'Account does not exist. Please register first.',
+                            msg: 'Account does not exist. Please register first.',
+                            errType: 'MongoDBError'
+                        }
+                    }
+                })
             }
         }
 
@@ -111,7 +158,17 @@ exports.loginUsingMob = async (req, res) => {
         const { phone, password } = req.body
 
         if (!phone || !password) {
-            return res.status(400).json({ status: 0, data: { payload: req.body }, message: 'Please enter your credentials.' })
+            return res.status(400).json({
+                status: 0,
+                data: {
+                    err: {
+                        generatedTime: new Date(),
+                        errMsg: 'Please enter your credentials.',
+                        msg: 'Please enter your credentials.',
+                        errType: 'ValidationError'
+                    }
+                }
+            })
         }
 
         var user
@@ -119,7 +176,17 @@ exports.loginUsingMob = async (req, res) => {
             user = await User.findOne({ phone }).select('+password')
             if (user) {
                 if (!user || !(user.comparePassword(password, user.password))) {
-                    return res.status(401).json({ status: 0, data: { payload: req.body }, message: 'Incorrect credentials.' })
+                    return res.status(401).json({
+                        status: 0,
+                        data: {
+                            err: {
+                                generatedTime: new Date(),
+                                errMsg: 'Incorrect credentials.',
+                                msg: 'Incorrect credentials.',
+                                errType: 'AuthenticationError'
+                            }
+                        }
+                    })
                 }
 
                 const loggedUser = await User.updateOne({ phone }, { $set: { status: 'active' } })
@@ -127,7 +194,17 @@ exports.loginUsingMob = async (req, res) => {
                 createJWT(user, 200, 'User logged in successfully.', res)
 
             } else {
-                return res.status(404).json({ status: 0, data: { payload: req.body }, message: 'Account does not exist. Please register first.' })
+                return res.status(404).json({
+                    status: 0,
+                    data: {
+                        err: {
+                            generatedTime: new Date(),
+                            errMsg: 'Account does not exist. Please register first.',
+                            msg: 'Account does not exist. Please register first.',
+                            errType: 'MongoDBError'
+                        }
+                    }
+                })
             }
         }
 
@@ -151,7 +228,17 @@ exports.forgotPwd = async (req, res) => {
         // }
 
         if (!req.body.email) {
-            return res.status(400).json({ status: 0, data: { payload: req.body }, message: 'Please enter email address.' })
+            return res.status(400).json({
+                status: 0,
+                data: {
+                    err: {
+                        generatedTime: new Date(),
+                        errMsg: 'Please enter email address.',
+                        msg: 'Please enter email address.',
+                        errType: 'ValidationError'
+                    }
+                }
+            })
         }
 
         const user = await User.findOne({ email: req.body.email })
@@ -162,7 +249,17 @@ exports.forgotPwd = async (req, res) => {
         const linkExpireTime = Date.now() + 2 * 60 * 1000 // 2 minutes expiry time
 
         if (!user) {
-            return res.status(404).json({ status: 0, data: { payload: req.body }, message: 'No user found with this email address.' })
+            return res.status(404).json({
+                status: 0,
+                data: {
+                    err: {
+                        generatedTime: new Date(),
+                        errMsg: 'No user found with this email address.',
+                        msg: 'No user found with this email address.',
+                        errType: 'MongoDBError'
+                    }
+                }
+            })
         }
 
         const currentUser = await User.updateOne({ email: req.body.email }, { $set: { pwdResetToken, linkExpireTime } })
@@ -210,7 +307,17 @@ exports.resetPwd = async (req, res) => {
         if (user) {
 
             if (!req.body.password) {
-                return res.status(400).json({ status: 0, data: { payload: req.body }, message: 'Please enter new password.' })
+                return res.status(400).json({
+                    status: 0,
+                    data: {
+                        err: {
+                            generatedTime: new Date(),
+                            errMsg: 'Please enter new password.',
+                            msg: 'Please enter new password.',
+                            errType: 'ValidationError'
+                        }
+                    }
+                })
             }
 
             user.pass = req.body.password
@@ -223,7 +330,17 @@ exports.resetPwd = async (req, res) => {
             res.status(200).json({ status: 1, data: { user }, message: 'Password updated successfully.' })
 
         } else {
-            return res.status(400).json({ status: 0, data: { payload: req.body }, message: 'Link expired.' })
+            return res.status(400).json({
+                status: 0,
+                data: {
+                    err: {
+                        generatedTime: new Date(),
+                        errMsg: 'Link expired.',
+                        msg: 'Link expired.',
+                        errType: 'ValidationError'
+                    }
+                }
+            })
         }
 
     } catch (err) {
@@ -244,7 +361,17 @@ exports.logout = async (req, res) => {
             res.removeHeader('Authorization')
             res.status(200).json({ status: 1, data: { user }, message: 'You have logged out successfully.' })
         } else {
-            return res.status(404).json({ status: 0, data: { payload: user }, message: 'User not found.' })
+            return res.status(404).json({
+                status: 0,
+                data: {
+                    err: {
+                        generatedTime: new Date(),
+                        errMsg: 'User not found.',
+                        msg: 'User not found.',
+                        errType: 'MongoDBError'
+                    }
+                }
+            })
         }
     } catch (err) {
         console.log(err)
