@@ -98,6 +98,7 @@ exports.updateProfile = async (req, res) => {
                         firstName: updatedUser.firstName,
                         lastName: updatedUser.lastName,
                         status: updatedUser.status,
+                        country: updatedUser.country,
                         phone: updatedUser.phone,
                         email: updatedUser.email,
                         gender: updatedUser.gender,
