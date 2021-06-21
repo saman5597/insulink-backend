@@ -31,7 +31,6 @@ const createJWT = (user, statusCode, message, res) => {
                 gender: user.gender,
                 country: user.country,
                 role: user.role,
-                status: user.status,
                 token
             }
         },
