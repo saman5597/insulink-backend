@@ -14,22 +14,49 @@ exports.isAuth = async (err, req, res, next) => {
 
     if (err) {
       if (err.name === 'UnauthorizedError') {
-        return res.status(401).send({
+        return res.status(401).json({
           status: 0,
-          data: { err },
-          message: 'Not authenticated.'
+          data: {
+            err: {
+              generatedTime: new Date(),
+              errMsg: 'Not authenticated.',
+              msg: err.message,
+              errType: 'UnauthorizedError'
+            }
+          }
+
         })
       }
     }
 
     if (!req.auth) {
-      return res.status(401).json({ status: 0, data: {}, message: 'You are not logged in. Please login.' })
+      return res.status(401).json({
+        status: 0,
+        data: {
+          err: {
+            generatedTime: new Date(),
+            errMsg: 'You are not logged in. Please login.',
+            msg: 'Not authenticated.',
+            errType: 'UnauthorizedError'
+          }
+        }
+      })
     }
 
     const currentUser = await User.findById(req.auth.id)
 
     if (!currentUser) {
-      return res.status(401).json({ status: 0, data: {}, message: 'The user belonging to the token does no longer exist.' })
+      return res.status(401).json({
+        status: 0,
+        data: {
+          err: {
+            generatedTime: new Date(),
+            errMsg: 'The user belonging to the token does no longer exist.',
+            msg: 'Not authenticated.',
+            errType: 'UnauthorizedError'
+          }
+        }
+      })
     }
 
     next()
@@ -48,7 +75,17 @@ function authorizeTo(role) {
 
     const currentUser = await User.findById(req.auth.id)
     if (role !== currentUser.role) {
-      return res.status(403).json({ status: 0, data: {}, message: 'You do not have permission to perform this action.' })
+      return res.status(403).json({
+        status: 0,
+        data: {
+          err: {
+            generatedTime: new Date(),
+            errMsg: 'You do not have permission to perform this action.',
+            msg: 'Not authorized.',
+            errType: 'UnauthorizedError'
+          }
+        }
+      })
     }
     next()
   }
