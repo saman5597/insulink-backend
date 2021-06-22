@@ -21,7 +21,7 @@ exports.isAuth = async (err, req, res, next) => {
               generatedTime: new Date(),
               errMsg: 'Not authenticated.',
               msg: err.message,
-              errType: 'UnauthorizedError'
+              type: 'UnauthorizedError'
             }
           }
 
@@ -37,7 +37,7 @@ exports.isAuth = async (err, req, res, next) => {
             generatedTime: new Date(),
             errMsg: 'You are not logged in. Please login.',
             msg: 'Not authenticated.',
-            errType: 'UnauthorizedError'
+            type: 'UnauthorizedError'
           }
         }
       })
@@ -53,7 +53,7 @@ exports.isAuth = async (err, req, res, next) => {
             generatedTime: new Date(),
             errMsg: 'The user belonging to the token does no longer exist.',
             msg: 'Not authenticated.',
-            errType: 'UnauthorizedError'
+            type: 'UnauthorizedError'
           }
         }
       })
@@ -82,7 +82,7 @@ function authorizeTo(role) {
             generatedTime: new Date(),
             errMsg: 'You do not have permission to perform this action.',
             msg: 'Not authorized.',
-            errType: 'UnauthorizedError'
+            type: 'UnauthorizedError'
           }
         }
       })

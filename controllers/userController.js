@@ -48,7 +48,7 @@ exports.changePassword = async (req, res) => {
                             generatedTime: new Date(),
                             errMsg: 'Please enter your current password.',
                             msg: 'Please enter your current password.',
-                            errType: 'ValidationError'
+                            type: 'ValidationError'
                         }
                     }
                 })
@@ -62,7 +62,7 @@ exports.changePassword = async (req, res) => {
                             generatedTime: new Date(),
                             errMsg: 'Your current password is incorrect.',
                             msg: 'Your current password is incorrect.',
-                            errType: 'AuthenticationError'
+                            type: 'AuthenticationError'
                         }
                     }
                 })
@@ -76,7 +76,7 @@ exports.changePassword = async (req, res) => {
                             generatedTime: new Date(),
                             errMsg: 'Please enter your new password.',
                             msg: 'Please enter your new password.',
-                            errType: 'ValidationError'
+                            type: 'ValidationError'
                         }
                     }
                 })
@@ -96,7 +96,7 @@ exports.changePassword = async (req, res) => {
                         generatedTime: new Date(),
                         errMsg: 'User not found.',
                         msg: 'User not found.',
-                        errType: 'MongoDBError'
+                        type: 'MongoDBError'
                     }
                 }
             })
@@ -155,7 +155,7 @@ exports.updateProfile = async (req, res) => {
                         generatedTime: new Date(),
                         errMsg: 'User not found.',
                         msg: 'User not found.',
-                        errType: 'MongoDBError'
+                        type: 'MongoDBError'
                     }
                 }
             })
@@ -172,7 +172,7 @@ exports.updateProfile = async (req, res) => {
                         generatedTime: new Date(),
                         errMsg: 'User already exists.',
                         msg: err.message,
-                        errType: 'DuplicateKeyError'
+                        type: 'DuplicateKeyError'
                     }
                 }
             })
@@ -185,7 +185,7 @@ exports.updateProfile = async (req, res) => {
                     generatedTime: new Date(),
                     errMsg: err.message,
                     msg: err._message,
-                    errType: 'ValidationError'
+                    type: 'ValidationError'
                 }
             }
         })
@@ -213,7 +213,7 @@ exports.deactivateAccount = async (req, res) => {
                         generatedTime: new Date(),
                         errMsg: 'User not found.',
                         msg: 'User not found.',
-                        errType: 'MongoDBError'
+                        type: 'MongoDBError'
                     }
                 }
             })
@@ -243,7 +243,7 @@ exports.deleteAccount = async (req, res) => {
                         generatedTime: new Date(),
                         errMsg: 'User not found.',
                         msg: 'User not found.',
-                        errType: 'MongoDBError'
+                        type: 'MongoDBError'
                     }
                 }
             })

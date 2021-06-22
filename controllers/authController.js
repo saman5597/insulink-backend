@@ -68,7 +68,7 @@ exports.signUp = async (req, res) => {
                         generatedTime: new Date(),
                         errMsg: 'User already exists.',
                         msg: err.message,
-                        errType: 'DuplicateKeyError'
+                        type: 'DuplicateKeyError'
                     }
                 }
             })
@@ -81,7 +81,7 @@ exports.signUp = async (req, res) => {
                     generatedTime: new Date(),
                     errMsg: 'Invalid data.',
                     msg: err.message,
-                    errType: 'ValidationError'
+                    type: 'ValidationError'
                 }
             }
         })
@@ -102,7 +102,7 @@ exports.loginUsingEmail = async (req, res) => {
                         generatedTime: new Date(),
                         errMsg: 'Please enter your credentials.',
                         msg: 'Please enter your credentials.',
-                        errType: 'ValidationError'
+                        type: 'ValidationError'
                     }
                 }
             })
@@ -120,7 +120,7 @@ exports.loginUsingEmail = async (req, res) => {
                                 generatedTime: new Date(),
                                 errMsg: 'Incorrect credentials.',
                                 msg: 'Incorrect credentials.',
-                                errType: 'AuthenticationError'
+                                type: 'AuthenticationError'
                             }
                         }
                     })
@@ -139,7 +139,7 @@ exports.loginUsingEmail = async (req, res) => {
                             generatedTime: new Date(),
                             errMsg: 'Account does not exist. Please register first.',
                             msg: 'Account does not exist. Please register first.',
-                            errType: 'MongoDBError'
+                            type: 'MongoDBError'
                         }
                     }
                 })
@@ -165,7 +165,7 @@ exports.loginUsingMob = async (req, res) => {
                         generatedTime: new Date(),
                         errMsg: 'Please enter your credentials.',
                         msg: 'Please enter your credentials.',
-                        errType: 'ValidationError'
+                        type: 'ValidationError'
                     }
                 }
             })
@@ -183,7 +183,7 @@ exports.loginUsingMob = async (req, res) => {
                                 generatedTime: new Date(),
                                 errMsg: 'Incorrect credentials.',
                                 msg: 'Incorrect credentials.',
-                                errType: 'AuthenticationError'
+                                type: 'AuthenticationError'
                             }
                         }
                     })
@@ -201,7 +201,7 @@ exports.loginUsingMob = async (req, res) => {
                             generatedTime: new Date(),
                             errMsg: 'Account does not exist. Please register first.',
                             msg: 'Account does not exist. Please register first.',
-                            errType: 'MongoDBError'
+                            type: 'MongoDBError'
                         }
                     }
                 })
@@ -235,7 +235,7 @@ exports.forgotPwd = async (req, res) => {
                         generatedTime: new Date(),
                         errMsg: 'Please enter email address.',
                         msg: 'Please enter email address.',
-                        errType: 'ValidationError'
+                        type: 'ValidationError'
                     }
                 }
             })
@@ -256,7 +256,7 @@ exports.forgotPwd = async (req, res) => {
                         generatedTime: new Date(),
                         errMsg: 'No user found with this email address.',
                         msg: 'No user found with this email address.',
-                        errType: 'MongoDBError'
+                        type: 'MongoDBError'
                     }
                 }
             })
@@ -314,7 +314,7 @@ exports.resetPwd = async (req, res) => {
                             generatedTime: new Date(),
                             errMsg: 'Please enter new password.',
                             msg: 'Please enter new password.',
-                            errType: 'ValidationError'
+                            type: 'ValidationError'
                         }
                     }
                 })
@@ -337,7 +337,7 @@ exports.resetPwd = async (req, res) => {
                         generatedTime: new Date(),
                         errMsg: 'Link expired.',
                         msg: 'Link expired.',
-                        errType: 'ValidationError'
+                        type: 'ValidationError'
                     }
                 }
             })
@@ -368,7 +368,7 @@ exports.logout = async (req, res) => {
                         generatedTime: new Date(),
                         errMsg: 'User not found.',
                         msg: 'User not found.',
-                        errType: 'MongoDBError'
+                        type: 'MongoDBError'
                     }
                 }
             })
