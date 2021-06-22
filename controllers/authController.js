@@ -66,8 +66,8 @@ exports.signUp = async (req, res) => {
                 data: {
                     err: {
                         generatedTime: new Date(),
-                        errMsg: 'User already exists.',
-                        msg: err.message,
+                        errMsg: err.message,
+                        msg: 'User already exists.',
                         type: 'DuplicateKeyError'
                     }
                 }
@@ -79,8 +79,8 @@ exports.signUp = async (req, res) => {
             data: {
                 err: {
                     generatedTime: new Date(),
-                    errMsg: 'Invalid data.',
-                    msg: err.message,
+                    errMsg: err.message,
+                    msg: 'Invalid data.',
                     type: 'ValidationError'
                 }
             }

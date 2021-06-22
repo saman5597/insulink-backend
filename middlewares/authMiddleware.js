@@ -19,8 +19,8 @@ exports.isAuth = async (err, req, res, next) => {
           data: {
             err: {
               generatedTime: new Date(),
-              errMsg: 'Not authenticated.',
-              msg: err.message,
+              errMsg: err.message,
+              msg: 'Not authenticated.',
               type: 'UnauthorizedError'
             }
           }
@@ -35,8 +35,8 @@ exports.isAuth = async (err, req, res, next) => {
         data: {
           err: {
             generatedTime: new Date(),
-            errMsg: 'You are not logged in. Please login.',
-            msg: 'Not authenticated.',
+            errMsg: 'Not authenticated.',
+            msg: 'You are not logged in. Please login.',
             type: 'UnauthorizedError'
           }
         }
@@ -51,8 +51,8 @@ exports.isAuth = async (err, req, res, next) => {
         data: {
           err: {
             generatedTime: new Date(),
-            errMsg: 'The user belonging to the token does no longer exist.',
-            msg: 'Not authenticated.',
+            errMsg: 'Not authenticated.',
+            msg: 'The user belonging to the token does no longer exist.',
             type: 'UnauthorizedError'
           }
         }
@@ -80,8 +80,8 @@ function authorizeTo(role) {
         data: {
           err: {
             generatedTime: new Date(),
-            errMsg: 'You do not have permission to perform this action.',
-            msg: 'Not authorized.',
+            errMsg: 'Not authorized.',
+            msg: 'You do not have permission to perform this action.',
             type: 'UnauthorizedError'
           }
         }

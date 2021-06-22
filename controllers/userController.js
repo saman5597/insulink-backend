@@ -170,8 +170,8 @@ exports.updateProfile = async (req, res) => {
                 data: {
                     err: {
                         generatedTime: new Date(),
-                        errMsg: 'User already exists.',
-                        msg: err.message,
+                        errMsg: err.message,
+                        msg: 'User already exists.',
                         type: 'DuplicateKeyError'
                     }
                 }
