@@ -24,7 +24,17 @@ exports.getBasalByDateRange = async (req, res) => {
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1, 
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -42,7 +52,17 @@ exports.getBasalByDate = async (req, res) => {
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1, 
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -54,7 +74,17 @@ exports.getBasalByUID = async (req, res) => {
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1, 
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -80,7 +110,17 @@ exports.getBolusByDateRange = async (req, res) => {
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1, 
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -98,7 +138,17 @@ exports.getBolusByDate = async (req, res) => {
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -110,7 +160,17 @@ exports.getBolusByUID = async (req, res) => {
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -176,6 +236,16 @@ exports.getReport = async (req, res) => {
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1, 
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }

@@ -11,7 +11,7 @@ exports.uploadDeviceData = async (req, res) => {
     const session = await mongoose.startSession()
     try {
         console.log(req.body)
-        const { deviceId, Glucose, Insulin } = req.body.IGValue
+        const { deviceId, Glucose, Insulin } = req.body
 
         // Either perform both operations on none
         await session.startTransaction()
@@ -82,7 +82,17 @@ exports.uploadDeviceData = async (req, res) => {
         console.log(err)
         await session.abortTransaction()
         session.endSession()
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -96,7 +106,17 @@ exports.getAllDevices = async (req, res) => {
         res.status(200).json({ status: 1, data: { devices }, message: 'Getting data of all devices from DB.' })
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -110,7 +130,17 @@ exports.getDeviceByDID = async (req, res) => {
         res.status(200).json({ status: 1, data: { device }, message: 'Getting data of device by device ID from DB.' })
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -134,7 +164,17 @@ exports.createDevice = async (req, res) => {
         res.status(201).json({ status: 1, data: { device }, message: 'Device created successfully.' })
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -155,7 +195,17 @@ exports.updateDeviceByDID = async (req, res) => {
         })
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
         /* 
         400 - Bad Request
         401 - Unauthorised
@@ -186,7 +236,17 @@ exports.updateDevice = async (req, res) => {
         })
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -197,6 +257,16 @@ exports.deleteDeviceByDID = async (req, res) => {
         res.status(204).json({ status: 1, data: {}, message: 'Device deleted.' })
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }

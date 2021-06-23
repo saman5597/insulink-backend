@@ -148,7 +148,17 @@ exports.loginUsingEmail = async (req, res) => {
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -210,7 +220,17 @@ exports.loginUsingMob = async (req, res) => {
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -279,7 +299,17 @@ exports.forgotPwd = async (req, res) => {
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -345,7 +375,17 @@ exports.resetPwd = async (req, res) => {
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 
 }
@@ -375,6 +415,16 @@ exports.logout = async (req, res) => {
         }
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }

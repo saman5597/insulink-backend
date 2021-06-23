@@ -12,7 +12,17 @@ exports.getAllUsers = async (req, res) => {
         res.status(200).json({ status: 1, data: { userData: users }, message: 'Getting data of all users from DB.' })
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -26,7 +36,17 @@ exports.getLoggedInUser = async (req, res) => {
         res.status(200).json({ status: 1, data: { user }, message: 'Getting data of logged in user from DB.' })
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -104,7 +124,17 @@ exports.changePassword = async (req, res) => {
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -220,7 +250,17 @@ exports.deactivateAccount = async (req, res) => {
         }
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -250,6 +290,16 @@ exports.deleteAccount = async (req, res) => {
         }
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }

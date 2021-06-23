@@ -1,4 +1,6 @@
 const Glucose = require('../models/glucoseModel')
+// const Device = require('../models/deviceModel')
+// const User = require('../models/userModel')
 
 exports.getGlucoseByDateRange = async (req, res) => {
     try {
@@ -16,13 +18,22 @@ exports.getGlucoseByDateRange = async (req, res) => {
             }
         }
 
-        const glucoseData = await Glucose.find(queryObj)
-        console.log(glucoseData)
+        const glucoseData = await Glucose.find(queryObj).select('-device -user')
         res.status(200).json({ status: 1, data: { glucose: glucoseData }, message: 'Glucose data for a particular date range.' })
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
@@ -34,24 +45,50 @@ exports.getGlucoseByDate = async (req, res) => {
         } else {
             queryObj = { "date": new Date(req.query["date"]) }
         }
-        const glucoseData = await Glucose.find(queryObj)
-        console.log(glucoseData)
+        const glucoseData = await Glucose.find(queryObj).select('-device -user')
         res.status(200).json({ status: 1, data: { glucose: glucoseData }, message: 'Glucose data for a particular date.' })
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
 
 exports.getGlucoseByUID = async (req, res) => {
     try {
-        const glucoseData = await Glucose.find({ user: req.params.uid })
-        console.log(glucoseData)
+        const glucoseData = await Glucose.find({ user: req.params.uid }).select('-device -user')
+        // .populate({
+        //     path: "device",
+        //     select: "-users"
+        // })
+        // .populate({
+        //     path: "user",
+        //     select: "-devices -__v -createdAt -updatedAt"
+        // })
         res.status(200).json({ status: 1, data: { glucose: glucoseData }, message: 'Glucose data for a particular user.' })
 
     } catch (err) {
         console.log(err)
-        res.status(500).json({ status: -1, data: { err }, message: 'Internal Server Error.' })
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
     }
 }
