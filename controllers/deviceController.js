@@ -11,36 +11,40 @@ exports.uploadDeviceData = async (req, res) => {
     const session = await mongoose.startSession()
     try {
         console.log(req.body)
+        var glucoseArr = []
+        var basalArr = []
+        var bolusArr = []
         const { deviceId, Glucose, Insulin } = req.body
 
         // Either perform both operations on none
         await session.startTransaction()
 
-        const user = await User.findById(req.auth.id)
-        if (user) {
-            user.devices.push(deviceId)
-            await user.save()
-        }
-
         const device = await Device.findOne({ serialNo: deviceId })
+        const device_id = device._id
         if (device) {
+
             device.users.push(req.auth.id)
             await device.save()
-        }
+
+            const user = await User.findById(req.auth.id)
+            if (user) {
+                user.devices.push(device_id)
+                await user.save()
+            }
+        } 
 
         session.commitTransaction()
         session.endSession()
         ///////////////////////////////////////////
-        var glucoseArr, bolusArr, basalArr = []
         Glucose.forEach(el => {
             var date = el.date
-            el.Glucose.forEach(glucose => {
+            el.BgValue.forEach(glucose => {
                 glucoseArr.push({
                     date,
                     readingTime: glucose.readingTime,
                     glucoseReading: glucose.glucoseReading,
                     readingType: glucose.type,
-                    device: deviceId,
+                    device: device_id,
                     user: req.auth.id
                 })
             })
@@ -55,7 +59,7 @@ exports.uploadDeviceData = async (req, res) => {
                     time: bolus.time,
                     dose: bolus.unit,
                     bolusType: bolus.type,
-                    device: deviceId,
+                    device: device_id,
                     user: req.auth.id
                 })
             })
@@ -66,7 +70,7 @@ exports.uploadDeviceData = async (req, res) => {
                     startTime: basal.startTime,
                     endTime: basal.endTime,
                     flow: basal.flow,
-                    device: deviceId,
+                    device: device_id,
                     user: req.auth.id
                 })
             })
@@ -76,7 +80,17 @@ exports.uploadDeviceData = async (req, res) => {
         const bolusData = await Bolus.insertMany(bolusArr)            // Bolus Data
         const basalData = await Basal.insertMany(basalArr)            // Basal Data
 
-        res.status(201).json({ status: 1, data: {}, message: 'Data uploaded successfully.' })
+        res.status(201).json({
+            status: 1,
+            data: {
+                glucose: glucoseData,
+                insulin: {
+                    bolus: bolusData,
+                    basal: basalData
+                }
+            },
+            message: 'Data uploaded successfully.'
+        })
 
     } catch (err) {
         console.log(err)
