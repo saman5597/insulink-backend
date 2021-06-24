@@ -38,7 +38,7 @@ if (process.env.NODE_ENV === 'development') {
 // }
 
 // Body-parsing , reading data from body into req.body
-app.use(express.json())
+app.use(express.json({limit: '200kb'}))
 
 // IP Address and Hostname 
 app.use(function (req, res, next) {

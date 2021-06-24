@@ -10,7 +10,8 @@ const Basal = require('../models/basalModel')
 exports.uploadDeviceData = async (req, res) => {
     const session = await mongoose.startSession()
     try {
-        console.log(req.body)
+        // console.log(req.body)
+        console.log(req.get("content-length")/1024)
         var glucoseArr = []
         var basalArr = []
         var bolusArr = []
