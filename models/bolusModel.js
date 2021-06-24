@@ -26,8 +26,8 @@ const bolusSchema = new mongoose.Schema(
       required: [true, 'Dose is required.']
     },
     bolusType: {
-      type: Number,
-      enum: [0, 1, 2],
+      type: String,
+      enum: ["0", "1", "2"],
       required: [true, 'Bolus type is required.']
     },
     device: {

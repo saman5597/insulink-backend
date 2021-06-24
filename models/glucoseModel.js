@@ -22,13 +22,13 @@ const glucoseSchema = new mongoose.Schema(
       required: [true, 'Reading time is required.']
     },
     glucoseReading: {
-      type: Number,
+      type: String,
       required: [true, 'Glucose reading is required.']
     },
     readingType: {
-      type: Number,
+      type: String,
       required: [true, 'Glucose reading type is required.'],
-      enum: [0, 1, 2]  // 0 -> Fasting, 1 -> Non - fasting, 2 -> Random
+      enum: ["0", "1", "2"]  // 0 -> Fasting, 1 -> Non - fasting, 2 -> Random
     },
     device: {
       type: mongoose.Schema.Types.ObjectId,

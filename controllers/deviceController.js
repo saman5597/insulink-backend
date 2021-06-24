@@ -20,7 +20,7 @@ exports.uploadDeviceData = async (req, res) => {
         await session.startTransaction()
 
         const device = await Device.findOne({ serialNo: deviceId })
-        const device_id = device._id
+        const device_id = device._id  //Mongoose Object Id
         if (device) {
 
             device.users.push(req.auth.id)

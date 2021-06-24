@@ -26,7 +26,7 @@ const basalSchema = new mongoose.Schema(
             required: [true, 'Dose is required.']
         },
         flow: {
-            type: Number,
+            type: String,
             required: [true, 'Dose is required.']
         },
         device: {
