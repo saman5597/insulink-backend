@@ -33,8 +33,6 @@ exports.uploadDeviceData = async (req, res) => {
             }
         } 
 
-        session.commitTransaction()
-        session.endSession()
         ///////////////////////////////////////////
         Glucose.forEach(el => {
             var date = el.date
@@ -80,6 +78,9 @@ exports.uploadDeviceData = async (req, res) => {
         const bolusData = await Bolus.insertMany(bolusArr)            // Bolus Data
         const basalData = await Basal.insertMany(basalArr)            // Basal Data
 
+        session.commitTransaction()
+        session.endSession()
+
         res.status(201).json({
             status: 1,
             data: {
@@ -96,13 +97,13 @@ exports.uploadDeviceData = async (req, res) => {
         console.log(err)
         await session.abortTransaction()
         session.endSession()
-        res.status(500).json({
-            status: -1,
+        res.status(400).json({
+            status: 0,
             data: {
                 err: {
                     generatedTime: new Date(),
                     errMsg: err.message,
-                    msg: 'Internal Server Error.',
+                    msg: 'Invalid data.',
                     type: err.name
                 }
             }
