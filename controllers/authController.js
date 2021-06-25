@@ -1,21 +1,24 @@
-const jwt = require('jsonwebtoken')
+const redis = require('redis')
+const redisClient = redis.createClient()
+const JWTR = require('jwt-redis').default
+const jwtr = new JWTR(redisClient)
 const crypto = require('crypto')
 
 const sendMail = require('../config/emailHandler')
 const User = require('../models/userModel')
 const { validationResult } = require("express-validator")
 
-const signToken = id => {
-
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
+const signToken = async id => {
+    const token = await jwtr.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN,
         issuer: 'AgVa Healthcare'
     })
+    return token
 }
 
-const createJWT = (user, statusCode, message, res) => {
+const createJWT = async (user, statusCode, message, res) => {
 
-    const token = signToken(user._id)
+    const token = await signToken(user._id)
 
     res.header('Authorization', `Bearer  ${token}`)
 
@@ -398,6 +401,7 @@ exports.logout = async (req, res) => {
         })
 
         if (user) {
+            const isDestroyed = await jwtr.destroy(req.auth.jti)
             res.removeHeader('Authorization')
             res.status(200).json({ status: 1, data: { user }, message: 'You have logged out successfully.' })
         } else {

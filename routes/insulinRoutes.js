@@ -1,10 +1,10 @@
 const { getBasalByDate, getBasalByDateRange, getBasalByUID, getBolusByDate, getBolusByDateRange, getBolusByUID } = require('../controllers/insulinController')
-const { isAuth, isUser, isAdmin, isSignedIn } = require('../middlewares/authMiddleware')
+const { isAuth, isUser, isAdmin } = require('../middlewares/authMiddleware')
 
 const router = require('express').Router()
 
 // Protected Routes starts here
-router.use(isSignedIn, isAuth)
+router.use(isAuth)
 
 router.get('/getBasalByDate', isAdmin, getBasalByDate)
 

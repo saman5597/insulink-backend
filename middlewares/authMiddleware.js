@@ -1,35 +1,23 @@
-const expressJWT = require('express-jwt')
+const redis = require('redis')
+const redisClient = redis.createClient()
+const JWTR = require('jwt-redis').default
+const jwtr = new JWTR(redisClient)
 
 const User = require('../models/userModel')
 
-exports.isSignedIn = expressJWT({
-  secret: process.env.JWT_SECRET,
-  requestProperty: 'auth',
-  algorithms: ['sha1', 'RS256', 'HS256']
-})
-
-exports.isAuth = async (err, req, res, next) => {
+exports.isAuth = async (req, res, next) => {
 
   try {
 
-    if (err) {
-      if (err.name === 'UnauthorizedError') {
-        return res.status(401).json({
-          status: 0,
-          data: {
-            err: {
-              generatedTime: new Date(),
-              errMsg: err.message,
-              msg: 'Not authenticated.',
-              type: 'UnauthorizedError'
-            }
-          }
-
-        })
-      }
+    let token;
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    ) {
+      token = req.headers.authorization.split(' ')[1];
     }
 
-    if (!req.auth) {
+    if (!token) {
       return res.status(401).json({
         status: 0,
         data: {
@@ -43,7 +31,8 @@ exports.isAuth = async (err, req, res, next) => {
       })
     }
 
-    const currentUser = await User.findById(req.auth.id)
+    const decodedUser = await jwtr.verify(token, process.env.JWT_SECRET)
+    const currentUser = await User.findById(decodedUser.id)
 
     if (!currentUser) {
       return res.status(401).json({
@@ -59,10 +48,23 @@ exports.isAuth = async (err, req, res, next) => {
       })
     }
 
+    req.auth = decodedUser
     next()
 
   } catch (error) {
     console.log(error)
+    return res.status(401).json({
+      status: 0,
+      data: {
+        err: {
+          generatedTime: new Date(),
+          errMsg: error.name,
+          msg: 'You are logged out.',
+          type: 'UnauthorizedError'
+        }
+      }
+
+    })
   }
 
 }
@@ -74,7 +76,7 @@ function authorizeTo(role) {
   return async (req, res, next) => {
 
     const currentUser = await User.findById(req.auth.id)
-    if (role !== currentUser.role) {
+    if (currentUser && role !== currentUser.role) {
       return res.status(403).json({
         status: 0,
         data: {

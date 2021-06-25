@@ -1,7 +1,7 @@
 const { body, check } = require('express-validator')
 
 const { signUp, loginUsingEmail, loginUsingMob, forgotPwd, resetPwd, logout } = require('../controllers/authController.js')
-const { isAuth, isUser, isAdmin, isSignedIn } = require('../middlewares/authMiddleware')
+const { isAuth, isUser, isAdmin } = require('../middlewares/authMiddleware')
 
 const router = require('express').Router()
 
@@ -137,7 +137,7 @@ router.patch('/resetPassword',
 )
 
 // Protected Routes starts here
-router.use(isSignedIn, isAuth)
+router.use(isAuth)
 
 /**
  * @swagger

@@ -1,12 +1,12 @@
 const { check } = require('express-validator')
 
 const { uploadDeviceData, getAllDevices, getDeviceByDID, updateDevice, updateDeviceByDID, deleteDeviceByDID, createDevice } = require('../controllers/deviceController.js')
-const { isAuth, isUser, isAdmin, isSignedIn } = require('../middlewares/authMiddleware')
+const { isAuth, isUser, isAdmin } = require('../middlewares/authMiddleware')
 
 const router = require('express').Router()
 
 // Protected Routes starts here
-router.use(isSignedIn, isAuth)
+router.use(isAuth)
 
 var isObjectValid = (param) => {
     return check(param).custom((obj) => {
