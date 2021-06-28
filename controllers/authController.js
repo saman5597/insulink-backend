@@ -1,5 +1,13 @@
 const redis = require('redis')
-const redisClient = redis.createClient()
+const url = require('url')
+// const redisClient = redis.createClient()
+let redisClient
+if(process.env.REDISCLOUD_URL){
+    let redisURL = url.parse(process.env.REDISCLOUD_URL);
+    redisClient = redis.createClient(redisURL)
+} else {
+    redisClient = redis.createClient()
+}
 const JWTR = require('jwt-redis').default
 const jwtr = new JWTR(redisClient)
 const crypto = require('crypto')
@@ -9,6 +17,7 @@ const User = require('../models/userModel')
 const { validationResult } = require("express-validator")
 
 const signToken = async id => {
+    // console.log(process.env.REDISCLOUD_URL)
     const token = await jwtr.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN,
         issuer: 'AgVa Healthcare'

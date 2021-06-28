@@ -1,5 +1,13 @@
 const redis = require('redis')
-const redisClient = redis.createClient()
+const url = require('url')
+// const redisClient = redis.createClient()
+let redisClient
+if(process.env.REDISCLOUD_URL){
+    let redisURL = url.parse(process.env.REDISCLOUD_URL);
+    redisClient = redis.createClient(redisURL)
+} else {
+    redisClient = redis.createClient()
+}
 const JWTR = require('jwt-redis').default
 const jwtr = new JWTR(redisClient)
 
