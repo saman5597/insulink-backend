@@ -1,9 +1,8 @@
 const redis = require('redis')
 const url = require('url')
-// const redisClient = redis.createClient()
 let redisClient
 if(process.env.REDISCLOUD_URL){
-    let redisURL = url.parse(process.env.REDISCLOUD_URL);
+    let redisURL = url.parse(process.env.REDISCLOUD_URL)
     redisClient = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true})
     redisClient.auth(redisURL.auth.split(":")[1])
 } else {
@@ -18,12 +17,12 @@ exports.isAuth = async (req, res, next) => {
 
   try {
 
-    let token;
+    let token
     if (
       req.headers.authorization &&
       req.headers.authorization.startsWith('Bearer')
     ) {
-      token = req.headers.authorization.split(' ')[1];
+      token = req.headers.authorization.split(' ')[1]
     }
 
     if (!token) {

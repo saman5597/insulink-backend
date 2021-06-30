@@ -249,3 +249,47 @@ exports.getReport = async (req, res) => {
         })
     }
 }
+
+exports.getLoggedUserBasal = async (req, res) => {
+    try {
+        const basalData = await Basal.find({ user: req.auth.id }).select('-device -user')
+        
+        res.status(200).json({ status: 1, data: { basal: basalData }, message: 'Basal data for logged in user.' })
+
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
+    }
+}
+
+exports.getLoggedUserBolus = async (req, res) => {
+    try {
+        const bolusData = await Bolus.find({ user: req.auth.id }).select('-device -user')
+        
+        res.status(200).json({ status: 1, data: { bolus: bolusData }, message: 'Bolus data for logged in user.' })
+
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
+    }
+}

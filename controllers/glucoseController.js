@@ -92,3 +92,25 @@ exports.getGlucoseByUID = async (req, res) => {
         })
     }
 }
+
+exports.getLoggedUserGlucose = async (req, res) => {
+    try {
+        const glucoseData = await Glucose.find({ user: req.auth.id }).select('-device -user')
+        
+        res.status(200).json({ status: 1, data: { glucose: glucoseData }, message: 'Glucose data for logged in user.' })
+
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
+    }
+}
