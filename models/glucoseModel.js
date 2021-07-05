@@ -22,7 +22,7 @@ const glucoseSchema = new mongoose.Schema(
       required: [true, 'Reading time is required.']
     },
     glucoseReading: {
-      type: String,
+      type: Number,
       required: [true, 'Glucose reading is required.']
     },
     readingType: {

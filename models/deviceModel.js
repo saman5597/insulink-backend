@@ -29,10 +29,12 @@ const deviceSchema = new mongoose.Schema(
             required: [true, 'Manufacture Date is required.']
         },
         battery: {
-            type: String
+            type: Number,
+            min: 0,
+            max: 100
         },
         reservoir: {
-            type: String
+            type: Number
         },
         users: {
             type: [mongoose.Schema.Types.ObjectId],

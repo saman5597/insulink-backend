@@ -29,8 +29,8 @@ exports.getReport = async (req, res) => {
                 $group: {
                     _id: null,
                     countGlucose: { $sum: 1 },
-                    sumGlucose: { $sum: { $toDouble: '$glucoseReading' } },
-                    avgGlucose: { $avg: { $toDouble: '$glucoseReading' } }
+                    sumGlucose: { $sum: '$glucoseReading' },
+                    avgGlucose: { $avg: '$glucoseReading' }
                 }
             }
         ])
@@ -43,8 +43,8 @@ exports.getReport = async (req, res) => {
                 $group: {
                     _id: null,
                     countBasal: { $sum: 1 },
-                    sumBasal: { $sum: { $toDouble: '$flow' } },
-                    avgBasal: { $avg: { $toDouble: '$flow' } }
+                    sumBasal: { $sum: '$flow' },
+                    avgBasal: { $avg: '$flow' }
                 }
             }
         ])
@@ -57,8 +57,8 @@ exports.getReport = async (req, res) => {
                 $group: {
                     _id: null,
                     countBolus: { $sum: 1 },
-                    sumBolus: { $sum: { $toDouble: '$dose' } },
-                    avgBolus: { $avg: { $toDouble: '$dose' } }
+                    sumBolus: { $sum: '$dose' },
+                    avgBolus: { $avg: '$dose' }
                 }
             }
         ])
@@ -74,12 +74,12 @@ exports.getReport = async (req, res) => {
             status: 1,
             data: {
                 glucose: {
-                    avgGlucose: glucoseStats[0] ? glucoseStats[0].avgGlucose.toString() : "0",
-                    sumGlucose: glucoseStats[0] ? glucoseStats[0].sumGlucose.toString() : "0"
+                    avgGlucose: glucoseStats[0] ? glucoseStats[0].avgGlucose : 0,
+                    sumGlucose: glucoseStats[0] ? glucoseStats[0].sumGlucose : 0
                 },
                 insulin: {
-                    avgInsulin: avgInsulin ? avgInsulin.toString() : "0",
-                    sumInsulin: sumInsulin ? sumInsulin.toString() : "0"
+                    avgInsulin: avgInsulin ? avgInsulin : 0,
+                    sumInsulin: sumInsulin ? sumInsulin : 0
                 }
             },
             message: 'Getting average Glucose, Insulin data of logged in user'
@@ -103,11 +103,111 @@ exports.getReport = async (req, res) => {
 
 exports.getMonthlyReport = async (req, res) => {
     try {
-        console.log(req.params.month)
+        const currentDate = new Date().toISOString()
+
+        var subtractedDate = new Date()
+        var newDate = subtractedDate.setMonth(subtractedDate.getMonth() - parseInt(req.params.month))
+        const startDate = new Date(newDate).toISOString().split("T")[0].concat("T00:00:00.000Z")
+        console.log(startDate)
+
+        const endDate = currentDate.split("T")[0].concat("T00:00:00.000Z")
+        console.log(endDate)
+        const queryObj = {
+            user: mongoose.Types.ObjectId(req.auth.id),
+            date: { $gte: new Date(startDate), $lte: new Date(endDate) }
+        }
+
+
+        const glucoseAggr = await Glucose.aggregate([
+            {
+                $match: queryObj
+            },
+            {
+                $group: {
+                    _id: {
+                        month: { $month: "$date" },
+                        year: { $year: "$date" }
+                    },
+                    sumGlucose: { $sum: '$glucoseReading' },
+                    avgGlucose: { $avg: '$glucoseReading' },
+                    countGlucose: { $sum: 1 }
+                }
+            },
+            { $sort: { "year": -1 } },
+            {
+                $project: {
+                    _id: 0,
+                    year: '$_id.year',
+                    month: '$_id.month',
+                    // sumGlucose: 1,
+                    // countGlucose: 1,
+                    avgGlucose: 1
+                }
+            }
+        ])
+
+        const bolusAggr = await Bolus.aggregate([
+            {
+                $match: queryObj
+            },
+            {
+                $group: {
+                    _id: {
+                        month: { $month: "$date" },
+                        year: { $year: "$date" }
+                    },
+                    sumBolus: { $sum: '$dose' },
+                    avgBolus: { $avg: '$dose' },
+                    countBolus: { $sum: 1 }
+                }
+            },
+            { $sort: { "year": -1 } },
+            {
+                $project: {
+                    _id: 0,
+                    year: '$_id.year',
+                    month: '$_id.month',
+                    // sumBolus: 1,
+                    // countBolus: 1,
+                    avgBolus: 1
+                }
+            }
+        ])
+
+        const basalAggr = await Basal.aggregate([
+            {
+                $match: queryObj
+            },
+            {
+                $group: {
+                    _id: {
+                        month: { $month: "$date" },
+                        year: { $year: "$date" }
+                    },
+                    sumBasal: { $sum: '$flow' },
+                    avgBasal: { $avg: '$flow' },
+                    countBasal: { $sum: 1 }
+                }
+            },
+            { $sort: { "year": -1 } },
+            {
+                $project: {
+                    _id: 0,
+                    year: '$_id.year',
+                    month: '$_id.month',
+                    // sumBasal: 1,
+                    // countBasal: 1,
+                    avgBasal: 1
+                }
+            }
+        ])
 
         res.status(200).json({
             status: 1,
-            message: 'Getting monthly average data of logged in user'
+            glucose: glucoseAggr,
+            bolus: bolusAggr,
+            basal: basalAggr,
+            message: 'Getting monthly average data of Insulin & Glucose of logged in user'
         })
 
     } catch (err) {
@@ -141,7 +241,7 @@ exports.getTodayIntake = async (req, res) => {
             {
                 $group: {
                     _id: null,
-                    sumGlucose: { $sum: { $toDouble: '$glucoseReading' } }
+                    sumGlucose: { $sum: '$glucoseReading' }
                 }
             }
         ])
@@ -153,7 +253,7 @@ exports.getTodayIntake = async (req, res) => {
             {
                 $group: {
                     _id: null,
-                    sumBolus: { $sum: { $toDouble: '$dose' } }
+                    sumBolus: { $sum: '$dose' }
                 }
             }
         ])
@@ -165,7 +265,7 @@ exports.getTodayIntake = async (req, res) => {
             {
                 $group: {
                     _id: null,
-                    sumBasal: { $sum: { $toDouble: '$flow' } }
+                    sumBasal: { $sum: '$flow' }
                 }
             }
         ])
@@ -177,7 +277,7 @@ exports.getTodayIntake = async (req, res) => {
             {
                 $group: {
                     _id: null,
-                    sumCarb: { $sum: { $toDouble: '$carbIntake' } }
+                    sumCarb: { $sum: '$carbIntake' }
                 }
             }
         ])
@@ -189,9 +289,9 @@ exports.getTodayIntake = async (req, res) => {
         res.status(200).json({
             status: 1,
             data: {
-                glucose: glucoseStats[0] ? glucoseStats[0].sumGlucose.toString() : "0",
-                insulin: sumInsulin ? sumInsulin.toString() : "0",
-                carb: carbStats[0] ? carbStats[0].avgCarb.toString() : "0"
+                glucose: glucoseStats[0] ? glucoseStats[0].sumGlucose : 0,
+                insulin: sumInsulin ? sumInsulin : 0,
+                carb: carbStats[0] ? carbStats[0].avgCarb : 0
             },
             message: "Getting today's intake of Glucose, Insulin and Carb."
         })
@@ -212,20 +312,41 @@ exports.getTodayIntake = async (req, res) => {
     }
 }
 
-exports.getDeviceDetails = async (req, res) => {
-    const user = await User.find({ _id: req.auth.id },
-        "devices",
-        {
-            $push: {
-                "users.devices": {
-                    "$sort": { "updatedAt": -1 }
-                }
+exports.getUpdatedDeviceDetails = async (req, res) => {
+    try {
+        const user = await User.aggregate([
+            {
+                $match: { _id: mongoose.Types.ObjectId(req.auth.id) }
+            },
+            {
+                $lookup: { from: 'devices', localField: 'devices', foreignField: '_id', as: 'devices' }
+            },
+            {
+                $unwind: '$devices'
+            },
+            {
+                $project: { _id: 0, 'devices.serialNo': 1, 'devices.battery': 1, 'devices.reservoir': 1, 'devices.updatedAt': 1 }
+            },
+            {
+                $sort: { 'devices.updatedAt': -1 }
             }
-        }).populate({
-            path: "devices",
-            select: "-users"
+        ])
+
+        console.log(user && user[0] ? user[0] : 0)
+
+        res.json({
+            status: 1,
+            data: {
+                device: {
+                    battery: user && user[0] ? user[0].devices.battery : 0,
+                    reservoir: user && user[0] ? user[0].devices.reservoir : 0
+                }
+            },
+            message: 'Get last updated device details'
         })
-    res.json(user)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 exports.getReadingsByDateRange = async (req, res) => {
@@ -253,9 +374,9 @@ exports.getReadingsByDateRange = async (req, res) => {
         res.status(200).json({
             status: 1,
             data: {
-                glucose: glucoseData.map(el => el.glucoseReading || "0"),
-                insulin: insulinData.map(el => el.toString() || "0"),
-                carb: bolusData.map(el => el.carbIntake || "0")
+                glucose: glucoseData.map(el => el.glucoseReading || 0),
+                insulin: insulinData.map(el => el || 0),
+                carb: bolusData.map(el => el.carbIntake || 0)
             },
             message: 'Getting insulin, glucose, carb data for n days'
         })

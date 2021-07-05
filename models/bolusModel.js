@@ -22,7 +22,7 @@ const bolusSchema = new mongoose.Schema(
       required: [true, 'Time is required.']
     },
     dose: {
-      type: String,
+      type: Number,
       required: [true, 'Dose is required.']
     },
     bolusType: {
@@ -31,7 +31,7 @@ const bolusSchema = new mongoose.Schema(
       required: [true, 'Bolus type is required.']
     },
     carbIntake: {
-      type: String
+      type: Number
     },
     device: {
         type: mongoose.Schema.Types.ObjectId,
