@@ -28,12 +28,28 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getLoggedInUser = async (req, res) => {
     try {
-        const user = await User.findOne({ _id: req.auth.id }).populate({
-            path: "devices",
-            select: "-users"
-        })
+        const user = await User.findOne({ _id: req.auth.id })
+        // .populate({
+        //     path: "devices",
+        //     select: "-users"
+        // })
 
-        res.status(200).json({ status: 1, data: { user }, message: 'Getting data of logged in user from DB.' })
+        res.status(200).json({
+            status: 1,
+            data: {
+                user: {
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    phone: user.phone,
+                    email: user.email,
+                    gender: user.gender,
+                    country: user.country,
+                    status: user.status,
+                    role: user.role,
+                    deviceCount: user.devices.length
+                }
+            }, message: 'Getting data of logged in user from DB.'
+        })
     } catch (err) {
         console.log(err)
         res.status(500).json({
