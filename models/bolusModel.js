@@ -30,6 +30,9 @@ const bolusSchema = new mongoose.Schema(
       enum: ["0", "1", "2"],
       required: [true, 'Bolus type is required.']
     },
+    carbIntake: {
+      type: String
+    },
     device: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Device"

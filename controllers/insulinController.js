@@ -1,6 +1,5 @@
 const Basal = require('../models/basalModel')
 const Bolus = require('../models/bolusModel')
-const Glucose = require('../models/glucoseModel')
 
 exports.getBasalByDateRange = async (req, res) => {
     try {
@@ -162,82 +161,6 @@ exports.getBolusByUID = async (req, res) => {
         console.log(err)
         res.status(500).json({
             status: -1,
-            data: {
-                err: {
-                    generatedTime: new Date(),
-                    errMsg: err.message,
-                    msg: 'Internal Server Error.',
-                    type: err.name
-                }
-            }
-        })
-    }
-}
-
-exports.getReport = async (req, res) => {
-    try {
-        var queryObj
-        if (!req.query["startDate"] && !req.query["endDate"]) {
-            queryObj = {}
-        } else if (!req.query["startDate"]) {
-            queryObj = { "date": { $lte: new Date(req.query["endDate"]) } }
-        } else if (!req.query["endDate"]) {
-            queryObj = { "date": { $gte: new Date(req.query["startDate"]) } }
-        } else {
-            queryObj = {
-                "date": { $gte: new Date(req.query["startDate"]), $lte: new Date(req.query["endDate"]) }
-            }
-        }
-
-        const glucoseStats = await Glucose.aggregate([
-            {
-                $match: queryObj
-            },
-            {
-                $group: {
-                    // _id: null (group for all the documents)
-                    _id: null,
-                    numGlucose: { $sum: 1 },
-                    sumGlucose: { $sum: '$glucoseReading' },
-                    avgGlucose: { $avg: '$glucoseReading' }
-                }
-            }
-        ])
-
-        const basalStats = await Basal.aggregate([
-            {
-                $match: queryObj
-            },
-            {
-                $group: {
-                    // _id: null (group for all the documents)
-                    _id: null,
-                    numBasal: { $sum: 1 },
-                    sumBasal: { $sum: '$flow' },
-                    avgBasal: { $avg: '$flow' }
-                }
-            }
-        ])
-
-        const bolusStats = await Bolus.aggregate([
-            {
-                $match: queryObj
-            },
-            {
-                $group: {
-                    // _id: null (group for all the documents)
-                    _id: null,
-                    numBolus: { $sum: 1 },
-                    sumBolus: { $sum: '$dose' },
-                    avgBolus: { $avg: '$dose' }
-                }
-            }
-        ])
-
-    } catch (err) {
-        console.log(err)
-        res.status(500).json({
-            status: -1, 
             data: {
                 err: {
                     generatedTime: new Date(),

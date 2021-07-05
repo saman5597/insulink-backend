@@ -11,6 +11,7 @@ const deviceRoute = require('./routes/deviceRoutes')
 const insulinRoute = require('./routes/insulinRoutes')
 const glucoseRoute = require('./routes/glucoseRoutes')
 const authRoute = require('./routes/authRoutes')
+const dashboardRoute = require('./routes/dashboardRoutes')
 const User = require('./models/userModel')
 const Device = require('./models/deviceModel')
 
@@ -59,6 +60,7 @@ app.use('/api/v1/users', userRoute)
 app.use('/api/v1/devices', deviceRoute)
 app.use('/api/v1/insulin', insulinRoute)
 app.use('/api/v1/glucose', glucoseRoute)
+app.use('/api/v1/dashboard', dashboardRoute)
 
 var graphqlSchema = buildSchema(`
   type User {

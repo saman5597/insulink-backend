@@ -23,15 +23,8 @@ exports.uploadDeviceData = async (req, res) => {
         const device = await Device.findOne({ serialNo: deviceId })
         const device_id = device._id  //Mongoose Object Id
         if (device) {
-
-            device.users.push(req.auth.id)
-            await device.save()
-
-            const user = await User.findById(req.auth.id)
-            if (user) {
-                user.devices.push(device_id)
-                await user.save()
-            }
+            const updatedDevice = await Device.updateOne({ serialNo: deviceId }, { $addToSet: { users: req.auth.id } }, { upsert: true })
+            const user = await User.updateOne({ _id: req.auth.id }, { $addToSet: { devices: device_id } }, { upsert: true })
         }
 
         ///////////////////////////////////////////
