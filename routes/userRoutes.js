@@ -1,9 +1,11 @@
 const { body } = require('express-validator')
 
-const { getAllUsers, getLoggedInUser, changePassword, updateProfile, deactivateAccount, deleteAccount } = require('../controllers/userController.js')
+const { getAllUsers, getAllUsersNew, getLoggedInUser, changePassword, updateProfile, deactivateAccount, deleteAccount } = require('../controllers/userController.js')
 const { isAuth, isUser, isAdmin } = require('../middlewares/authMiddleware')
 
 const router = require('express').Router()
+
+router.get('/all-users', getAllUsersNew)
 
 // Protected Routes starts here
 router.use(isAuth)

@@ -26,6 +26,27 @@ exports.getAllUsers = async (req, res) => {
     }
 }
 
+exports.getAllUsersNew = async (req, res) => {
+    try {
+        const users = await User.find({}).select('-devices')
+
+        res.status(200).json({ status: 1, data: { users }, message: 'Getting data of all users from DB.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
+    }
+}
+
 exports.getLoggedInUser = async (req, res) => {
     try {
         const user = await User.findOne({ _id: req.auth.id })
