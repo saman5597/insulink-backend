@@ -28,7 +28,14 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getAllUsersNew = async (req, res) => {
     try {
-        const users = await User.find({}).select('-devices')
+        var queryObj
+        if (req.query["status"] === "inactive") {
+            queryObj = { status: "inactive" }
+        } else if (req.query["status"] === "active") {
+            queryObj = { status: "active" }
+        } else queryObj = {}
+
+        const users = await User.find(queryObj).select('-devices')
 
         res.status(200).json({ status: 1, data: { users }, message: 'Getting data of all users from DB.' })
     } catch (err) {
