@@ -129,6 +129,27 @@ exports.getAllDevices = async (req, res) => {
     }
 }
 
+exports.getAllDevicesNew = async (req, res) => {
+    try {
+        const devices = await Device.find({}).select('-users')
+
+        res.status(200).json({ status: 1, data: { devices }, message: 'Getting data of all devices from DB.' })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
+    }
+}
+
 exports.getDeviceByDID = async (req, res) => {
     try {
         const device = await Device.findOne({ _id: req.params.did }).populate({
