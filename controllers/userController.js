@@ -3,7 +3,14 @@ const Device = require('../models/deviceModel')
 
 exports.getAllUsers = async (req, res) => {
     try {
-        const users = await User.find({}).populate({
+        var queryObj
+        if (req.query["status"] === "inactive") {
+            queryObj = { status: "inactive" }
+        } else if (req.query["status"] === "active") {
+            queryObj = { status: "active" }
+        } else queryObj = {}
+        
+        const users = await User.find(queryObj).populate({
             path: "devices",
             select: "-users"
             // match: { modelName: { $ne: 'pro' } }
@@ -35,7 +42,11 @@ exports.getAllUsersNew = async (req, res) => {
             queryObj = { status: "active" }
         } else queryObj = {}
 
-        const users = await User.find(queryObj).select('-devices')
+        const users = await User.find(queryObj).populate({
+            path: "devices",
+            select: "_id serialNo modelName manufactureDate battery reservoir"
+        })
+        // .select('-devices')
 
         res.status(200).json({ status: 1, data: { users }, message: 'Getting data of all users from DB.' })
     } catch (err) {
