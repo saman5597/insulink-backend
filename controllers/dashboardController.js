@@ -204,9 +204,11 @@ exports.getMonthlyReport = async (req, res) => {
 
         res.status(200).json({
             status: 1,
-            glucose: glucoseAggr,
-            bolus: bolusAggr,
-            basal: basalAggr,
+            data: {
+                glucose: glucoseAggr,
+                bolus: bolusAggr,
+                basal: basalAggr
+            },
             message: 'Getting monthly average data of Insulin & Glucose of logged in user'
         })
 
@@ -291,7 +293,7 @@ exports.getTodayIntake = async (req, res) => {
             data: {
                 glucose: glucoseStats[0] ? glucoseStats[0].sumGlucose : 0,
                 insulin: sumInsulin ? sumInsulin : 0,
-                carb: carbStats[0] ? carbStats[0].avgCarb : 0
+                carb: carbStats[0] ? carbStats[0].sumCarb : -1
             },
             message: "Getting today's intake of Glucose, Insulin and Carb."
         })
@@ -376,7 +378,7 @@ exports.getReadingsByDateRange = async (req, res) => {
             data: {
                 glucose: glucoseData.map(el => el.glucoseReading || 0),
                 insulin: insulinData.map(el => el || 0),
-                carb: bolusData.map(el => el.carbIntake || 0)
+                carb: bolusData.map(el => el.carbIntake || -1)
             },
             message: 'Getting insulin, glucose, carb data for n days'
         })
