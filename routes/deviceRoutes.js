@@ -5,8 +5,6 @@ const { isAuth, isUser, isAdmin } = require('../middlewares/authMiddleware')
 
 const router = require('express').Router()
 
-router.get('/all-devices', getAllDevicesNew)
-
 // Protected Routes starts here
 router.use(isAuth)
 
