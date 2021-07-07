@@ -5,6 +5,25 @@ const Basal = require('../models/basalModel')
 const User = require('../models/userModel')
 const Device = require('../models/deviceModel')
 
+function dateRange(startDate, endDate) {
+    var start = startDate.split('-');
+    var end = endDate.split('-');
+    var startYear = parseInt(start[0]);
+    var endYear = parseInt(end[0]);
+    var dates = [];
+
+    for (var i = startYear; i <= endYear; i++) {
+        var endMonth = i != endYear ? 11 : parseInt(end[1]) - 1;
+        var startMon = i === startYear ? parseInt(start[1]) - 1 : 0;
+        for (var j = startMon; j <= endMonth; j = j > 12 ? j % 12 || 11 : j + 1) {
+            var month = j + 1;
+            var displayMonth = month < 10 ? '0' + month : month;
+            dates.push([i, displayMonth].join('-'));
+        }
+    }
+    return dates;
+}
+
 exports.getReport = async (req, res) => {
     try {
         var queryObj
@@ -107,16 +126,17 @@ exports.getMonthlyReport = async (req, res) => {
 
         var subtractedDate = new Date()
         var newDate = subtractedDate.setMonth(subtractedDate.getMonth() - parseInt(req.params.month))
-        const startDate = new Date(newDate).toISOString().split("T")[0].concat("T00:00:00.000Z")
-        console.log(startDate)
 
+        const startDate = new Date(newDate).toISOString().split("T")[0].concat("T00:00:00.000Z")
         const endDate = currentDate.split("T")[0].concat("T00:00:00.000Z")
-        console.log(endDate)
+
+        const start_date = new Date(newDate).toISOString().split("T")[0]
+        const end_date = currentDate.split("T")[0]
+
         const queryObj = {
             user: mongoose.Types.ObjectId(req.auth.id),
             date: { $gte: new Date(startDate), $lte: new Date(endDate) }
         }
-
 
         const glucoseAggr = await Glucose.aggregate([
             {
@@ -126,7 +146,8 @@ exports.getMonthlyReport = async (req, res) => {
                 $group: {
                     _id: {
                         month: { $month: "$date" },
-                        year: { $year: "$date" }
+                        year: { $year: "$date" },
+                        date: { $substr: ["$date", 0, 7] }
                     },
                     sumGlucose: { $sum: '$glucoseReading' },
                     avgGlucose: { $avg: '$glucoseReading' },
@@ -139,8 +160,57 @@ exports.getMonthlyReport = async (req, res) => {
                     _id: 0,
                     year: '$_id.year',
                     month: '$_id.month',
-                    // sumGlucose: 1,
-                    // countGlucose: 1,
+                    date: '$_id.date',
+                    avgGlucose: 1
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    stats: { $push: "$$ROOT" }
+                }
+            },
+            {
+                $project: {
+                    stats: {
+                        $map: {
+                            input: dateRange(start_date, end_date),
+                            as: "date_new",
+                            in: {
+                                $let: {
+                                    vars: { dateIndex: { "$indexOfArray": ["$stats.date", "$$date_new"] } },
+                                    in: {
+                                        $cond: {
+                                            if: { $ne: ["$$dateIndex", -1] },
+                                            then: {
+                                                $arrayElemAt: ["$stats", "$$dateIndex"]
+                                            }
+                                            ,
+                                            else: {
+                                                month: { $month: { $toDate: "$$date_new" } },
+                                                year: { $year: { $toDate: "$$date_new" } },
+                                                avgGlucose: 0
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $unwind: "$stats"
+            },
+            {
+                $replaceRoot: {
+                    newRoot: "$stats"
+                }
+            },
+            {
+                $project: {
+                    year: '$year',
+                    month: '$month',
                     avgGlucose: 1
                 }
             }
@@ -154,7 +224,8 @@ exports.getMonthlyReport = async (req, res) => {
                 $group: {
                     _id: {
                         month: { $month: "$date" },
-                        year: { $year: "$date" }
+                        year: { $year: "$date" },
+                        date: { $substr: ["$date", 0, 7] }
                     },
                     sumBolus: { $sum: '$dose' },
                     avgBolus: { $avg: '$dose' },
@@ -167,8 +238,57 @@ exports.getMonthlyReport = async (req, res) => {
                     _id: 0,
                     year: '$_id.year',
                     month: '$_id.month',
-                    // sumBolus: 1,
-                    // countBolus: 1,
+                    date: '$_id.date',
+                    avgBolus: 1
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    stats: { $push: "$$ROOT" }
+                }
+            },
+            {
+                $project: {
+                    stats: {
+                        $map: {
+                            input: dateRange(start_date, end_date),
+                            as: "date_new",
+                            in: {
+                                $let: {
+                                    vars: { dateIndex: { "$indexOfArray": ["$stats.date", "$$date_new"] } },
+                                    in: {
+                                        $cond: {
+                                            if: { $ne: ["$$dateIndex", -1] },
+                                            then: {
+                                                $arrayElemAt: ["$stats", "$$dateIndex"]
+                                            }
+                                            ,
+                                            else: {
+                                                month: { $month: { $toDate: "$$date_new" } },
+                                                year: { $year: { $toDate: "$$date_new" } },
+                                                avgBolus: 0
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $unwind: "$stats"
+            },
+            {
+                $replaceRoot: {
+                    newRoot: "$stats"
+                }
+            },
+            {
+                $project: {
+                    year: '$year',
+                    month: '$month',
                     avgBolus: 1
                 }
             }
@@ -182,7 +302,8 @@ exports.getMonthlyReport = async (req, res) => {
                 $group: {
                     _id: {
                         month: { $month: "$date" },
-                        year: { $year: "$date" }
+                        year: { $year: "$date" },
+                        date: { $substr: ["$date", 0, 7] }
                     },
                     sumBasal: { $sum: '$flow' },
                     avgBasal: { $avg: '$flow' },
@@ -195,8 +316,57 @@ exports.getMonthlyReport = async (req, res) => {
                     _id: 0,
                     year: '$_id.year',
                     month: '$_id.month',
-                    // sumBasal: 1,
-                    // countBasal: 1,
+                    date: '$_id.date',
+                    avgBasal: 1
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    stats: { $push: "$$ROOT" }
+                }
+            },
+            {
+                $project: {
+                    stats: {
+                        $map: {
+                            input: dateRange(start_date, end_date),
+                            as: "date_new",
+                            in: {
+                                $let: {
+                                    vars: { dateIndex: { "$indexOfArray": ["$stats.date", "$$date_new"] } },
+                                    in: {
+                                        $cond: {
+                                            if: { $ne: ["$$dateIndex", -1] },
+                                            then: {
+                                                $arrayElemAt: ["$stats", "$$dateIndex"]
+                                            }
+                                            ,
+                                            else: {
+                                                month: { $month: { $toDate: "$$date_new" } },
+                                                year: { $year: { $toDate: "$$date_new" } },
+                                                avgBasal: 0
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $unwind: "$stats"
+            },
+            {
+                $replaceRoot: {
+                    newRoot: "$stats"
+                }
+            },
+            {
+                $project: {
+                    year: '$year',
+                    month: '$month',
                     avgBasal: 1
                 }
             }
