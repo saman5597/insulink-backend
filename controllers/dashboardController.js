@@ -82,6 +82,20 @@ exports.getReport = async (req, res) => {
             }
         ])
 
+        const carbStats = await Bolus.aggregate([
+            {
+                $match: queryObj
+            },
+            {
+                $group: {
+                    _id: null,
+                    countCarbIntake: { $sum: 1 },
+                    sumCarbIntake: { $sum: '$carbIntake' },
+                    avgCarbIntake: { $avg: '$carbIntake' }
+                }
+            }
+        ])
+
         const avgBasalVal = basalStats[0] ? basalStats[0].avgBasal : 0
         const avgBolusVal = bolusStats[0] ? bolusStats[0].avgBolus : 0
         const sumBasalVal = basalStats[0] ? basalStats[0].sumBasal : 0
@@ -93,12 +107,16 @@ exports.getReport = async (req, res) => {
             status: 1,
             data: {
                 glucose: {
-                    avgGlucose: glucoseStats[0] ? glucoseStats[0].avgGlucose : 0,
+                    avgGlucose: glucoseStats[0] && glucoseStats[0].avgGlucose ? glucoseStats[0].avgGlucose : 0,
                     sumGlucose: glucoseStats[0] ? glucoseStats[0].sumGlucose : 0
                 },
                 insulin: {
                     avgInsulin: avgInsulin ? avgInsulin : 0,
                     sumInsulin: sumInsulin ? sumInsulin : 0
+                },
+                carbIntake: {
+                    avgCarbIntake: carbStats[0] && carbStats[0].avgCarbIntake ? carbStats[0].avgCarbIntake : -1,
+                    sumCarbIntake: carbStats[0] ? carbStats[0].sumCarbIntake : -1
                 }
             },
             message: 'Getting average Glucose, Insulin data of logged in user'
