@@ -1,9 +1,9 @@
 const redis = require('redis')
 const url = require('url')
 let redisClient
-if(process.env.REDISCLOUD_URL){
+if (process.env.REDISCLOUD_URL) {
     let redisURL = url.parse(process.env.REDISCLOUD_URL)
-    redisClient = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true})
+    redisClient = redis.createClient(redisURL.port, redisURL.hostname, { no_ready_check: true })
     redisClient.auth(redisURL.auth.split(":")[1])
 } else {
     redisClient = redis.createClient()
@@ -41,7 +41,7 @@ const createJWT = async (user, statusCode, message, res) => {
                 email: user.email,
                 gender: user.gender,
                 country: user.country,
-                role: "active",
+                role: 0,
                 deviceCount: user.devices.length,
                 token
             }
