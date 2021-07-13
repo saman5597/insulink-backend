@@ -35,13 +35,13 @@ const createJWT = async (user, statusCode, message, res) => {
         data: {
             user: {
                 firstName: user.firstName,
-                status: user.status,
+                status: 'active',
                 lastName: user.lastName,
                 phone: user.phone,
                 email: user.email,
                 gender: user.gender,
                 country: user.country,
-                role: 0,
+                role: user.role,
                 deviceCount: user.devices.length,
                 token
             }
