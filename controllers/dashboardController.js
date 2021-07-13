@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const { ObjectId } = require('mongoose').Types
 const Glucose = require('../models/glucoseModel')
 const Bolus = require('../models/bolusModel')
 const Basal = require('../models/basalModel')
@@ -28,14 +28,14 @@ exports.getReport = async (req, res) => {
     try {
         var queryObj
         if (!req.query["startDate"] && !req.query["endDate"]) {
-            queryObj = { user: mongoose.Types.ObjectId(req.auth.id) }
+            queryObj = { user: ObjectId(req.auth.id) }
         } else if (!req.query["startDate"]) {
-            queryObj = { user: mongoose.Types.ObjectId(req.auth.id), date: { $lte: new Date(req.query["endDate"]) } }
+            queryObj = { user: ObjectId(req.auth.id), date: { $lte: new Date(req.query["endDate"]) } }
         } else if (!req.query["endDate"]) {
-            queryObj = { user: mongoose.Types.ObjectId(req.auth.id), date: { $gte: new Date(req.query["startDate"]) } }
+            queryObj = { user: ObjectId(req.auth.id), date: { $gte: new Date(req.query["startDate"]) } }
         } else {
             queryObj = {
-                user: mongoose.Types.ObjectId(req.auth.id),
+                user: ObjectId(req.auth.id),
                 date: { $gte: new Date(req.query["startDate"]), $lte: new Date(req.query["endDate"]) }
             }
         }
@@ -116,7 +116,7 @@ exports.getReport = async (req, res) => {
                 },
                 carbIntake: {
                     avgCarbIntake: carbStats[0] && carbStats[0].avgCarbIntake ? carbStats[0].avgCarbIntake : -1,
-                    sumCarbIntake: carbStats[0] ? carbStats[0].sumCarbIntake : -1
+                    sumCarbIntake: carbStats[0] && carbStats[0].sumCarbIntake ? carbStats[0].sumCarbIntake : -1
                 }
             },
             message: 'Getting average Glucose, Insulin data of logged in user'
@@ -152,7 +152,7 @@ exports.getMonthlyReport = async (req, res) => {
         const end_date = currentDate.split("T")[0]
 
         const queryObj = {
-            user: mongoose.Types.ObjectId(req.auth.id),
+            user: ObjectId(req.auth.id),
             date: { $gte: new Date(startDate), $lte: new Date(endDate) }
         }
 
@@ -420,7 +420,7 @@ exports.getTodayIntake = async (req, res) => {
     try {
         const currentDate = new Date().toISOString()
         const queryObj = {
-            user: mongoose.Types.ObjectId(req.auth.id),
+            user: ObjectId(req.auth.id),
             date: { $eq: new Date(currentDate.split("T")[0].concat("T00:00:00.000Z")) }
         }
 
@@ -506,7 +506,7 @@ exports.getUpdatedDeviceDetails = async (req, res) => {
     try {
         const user = await User.aggregate([
             {
-                $match: { _id: mongoose.Types.ObjectId(req.auth.id) }
+                $match: { _id: ObjectId(req.auth.id) }
             },
             {
                 $lookup: { from: 'devices', localField: 'devices', foreignField: '_id', as: 'devices' }
@@ -543,14 +543,14 @@ exports.getReadingsByDateRange = async (req, res) => {
     try {
         var queryObj
         if (!req.query["startDate"] && !req.query["endDate"]) {
-            queryObj = { user: mongoose.Types.ObjectId(req.auth.id) }
+            queryObj = { user: ObjectId(req.auth.id) }
         } else if (!req.query["startDate"]) {
-            queryObj = { user: mongoose.Types.ObjectId(req.auth.id), date: { $lte: new Date(req.query["endDate"]) } }
+            queryObj = { user: ObjectId(req.auth.id), date: { $lte: new Date(req.query["endDate"]) } }
         } else if (!req.query["endDate"]) {
-            queryObj = { user: mongoose.Types.ObjectId(req.auth.id), date: { $gte: new Date(req.query["startDate"]) } }
+            queryObj = { user: ObjectId(req.auth.id), date: { $gte: new Date(req.query["startDate"]) } }
         } else {
             queryObj = {
-                user: mongoose.Types.ObjectId(req.auth.id),
+                user: ObjectId(req.auth.id),
                 date: { $gte: new Date(req.query["startDate"]), $lte: new Date(req.query["endDate"]) }
             }
         }
