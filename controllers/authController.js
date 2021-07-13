@@ -17,7 +17,6 @@ const User = require('../models/userModel')
 const { validationResult } = require("express-validator")
 
 const signToken = async id => {
-    // console.log(process.env.REDISCLOUD_URL)
     const token = await jwtr.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN,
         issuer: 'AgVa Healthcare'
@@ -42,7 +41,8 @@ const createJWT = async (user, statusCode, message, res) => {
                 email: user.email,
                 gender: user.gender,
                 country: user.country,
-                role: user.role,
+                role: "active",
+                deviceCount: user.devices.length,
                 token
             }
         },
@@ -64,9 +64,9 @@ exports.signUp = async (req, res) => {
             pass: password
         })
 
-        await user.save()
+        const newUser = await user.save()
 
-        createJWT(user, 201, "User signed up successfully.", res)
+        createJWT(newUser, 201, "User signed up successfully.", res)
     } catch (err) {
 
         console.log(err.message)
