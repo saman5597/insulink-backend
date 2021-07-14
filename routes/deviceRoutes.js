@@ -1,6 +1,6 @@
 const { check } = require('express-validator')
 
-const { uploadDeviceData, getAllDevices, getAllDevicesNew, getDeviceByDID, updateDevice, updateDeviceByDID, deleteDeviceByDID, createDevice } = require('../controllers/deviceController.js')
+const { uploadDeviceData, getAllDevices, getDeviceByDID, updateDevice, updateDeviceByDID, deleteDeviceByDID, createDevice } = require('../controllers/deviceController.js')
 const { isAuth, isUser, isAdmin } = require('../middlewares/authMiddleware')
 
 const router = require('express').Router()

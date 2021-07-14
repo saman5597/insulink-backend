@@ -1,6 +1,6 @@
 const { body } = require('express-validator')
 
-const { getAllUsers, getAllUsersNew, getLoggedInUser, changePassword, updateProfile, deactivateAccount, deleteAccount } = require('../controllers/userController.js')
+const { getAllUsers, getLoggedInUser, changePassword, updateProfile, deactivateAccount, deleteAccount } = require('../controllers/userController.js')
 const { isAuth, isUser, isAdmin } = require('../middlewares/authMiddleware')
 
 const router = require('express').Router()
