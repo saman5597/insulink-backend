@@ -18,7 +18,7 @@ const deviceSchema = new mongoose.Schema(
             unique: true,
             required: [true, 'Serial No. is required.']
         },
-        modelName: {
+        modelType: {
             type: String,
             enum: ['standard', 'pro'],
             default: 'standard',
@@ -34,7 +34,18 @@ const deviceSchema = new mongoose.Schema(
             max: 100
         },
         reservoir: {
-            type: Number
+            type: Number,
+            min: 0,
+            max: 100
+        },
+        reservoirDateTime: {
+            type: Date
+        },
+        patchDateTime: {
+            type: Date
+        },
+        reportedAt: {
+            type: Date
         },
         users: {
             type: [mongoose.Schema.Types.ObjectId],

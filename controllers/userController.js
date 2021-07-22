@@ -13,7 +13,7 @@ exports.getAllUsers = async (req, res) => {
         const users = await User.find(queryObj).populate({
             path: "devices",
             select: "-users"
-            // match: { modelName: { $ne: 'pro' } }
+            // match: { modelType: { $ne: 'pro' } }
         })
 
         res.status(200).json({ status: 1, data: { userData: users }, message: 'Getting data of all users from DB.' })

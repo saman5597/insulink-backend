@@ -12,7 +12,7 @@ exports.getAllUsersNew = async (req, res) => {
 
         const users = await User.find(queryObj).populate({
             path: "devices",
-            select: "_id serialNo modelName manufactureDate battery reservoir"
+            select: "_id serialNo modelType manufactureDate battery reservoir"
         })
         // .select('-devices')
 

@@ -524,7 +524,7 @@ exports.getUpdatedDeviceDetails = async (req, res) => {
 
         console.log(user && user[0] ? user[0] : 0)
 
-        res.json({
+        res.status(200).json({
             status: 1,
             data: {
                 device: {
