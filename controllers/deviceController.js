@@ -33,7 +33,7 @@ exports.uploadDeviceData = async (req, res) => {
             el.BgValue.forEach(glucose => {
                 glucoseArr.push({
                     date,
-                    readingTime: glucose.readingTime,
+                    readingTime: glucose.readingTime.replace(/(.{2})$/, ':$1'),
                     glucoseReading: glucose.glucoseReading,
                     readingType: glucose.type,
                     device: device_id,
@@ -48,7 +48,7 @@ exports.uploadDeviceData = async (req, res) => {
             el.Bolus.forEach(bolus => {
                 bolusArr.push({
                     date,
-                    time: bolus.time,
+                    time: bolus.time.replace(/(.{2})$/, ':$1'),
                     dose: bolus.unit,
                     bolusType: bolus.type,
                     device: device_id,
@@ -59,8 +59,8 @@ exports.uploadDeviceData = async (req, res) => {
             el.Basal.forEach(basal => {
                 basalArr.push({
                     date,
-                    startTime: basal.startTime,
-                    endTime: basal.endTime,
+                    startTime: basal.startTime.replace(/(.{2})$/, ':$1'),
+                    endTime: basal.endTime.replace(/(.{2})$/, ':$1'),
                     flow: basal.flow,
                     device: device_id,
                     user: req.auth.id
@@ -155,7 +155,7 @@ exports.getDeviceByDID = async (req, res) => {
 
 exports.createDevice = async (req, res) => {
     try {
-        const { serialNo, modelName, manufactureDate } = req.body
+        const { serialNo, modelType, manufactureDate } = req.body
 
         let errors = validationResult(req)
         if (errors.isEmpty) {
@@ -164,7 +164,7 @@ exports.createDevice = async (req, res) => {
 
         const device = Device({
             serialNo,
-            modelName,
+            modelType,
             manufactureDate: new Date(manufactureDate)
         })
 
@@ -189,10 +189,10 @@ exports.createDevice = async (req, res) => {
 
 exports.updateDeviceByDID = async (req, res) => {
     try {
-        const { modelName } = req.body
+        const { modelType } = req.body
 
 
-        const updatedUser = await Device.findByIdAndUpdate(req.params.did, { modelName }, {
+        const updatedUser = await Device.findByIdAndUpdate(req.params.did, { modelType }, {
             new: true,
             runValidators: true
         })
@@ -231,9 +231,9 @@ exports.updateDeviceByDID = async (req, res) => {
 
 exports.updateDevice = async (req, res) => {
     try {
-        const { modelName } = req.body
+        const { modelType } = req.body
 
-        const updatedUser = await Device.updateOne({ serialNo: req.params.dname }, { $set: { modelName } }, {
+        const updatedUser = await Device.updateOne({ serialNo: req.params.dname }, { $set: { modelType } }, {
             runValidators: true,
             new: true
         })

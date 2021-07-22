@@ -27,19 +27,38 @@ const bolusSchema = new mongoose.Schema(
     },
     bolusType: {
       type: String,
-      enum: ["0", "1", "2"],
+      enum: ["0", "1"],
       required: [true, 'Bolus type is required.']
+    },
+    fromWizard: {
+      type: Boolean,
+      default: false
     },
     carbIntake: {
       type: Number
     },
+    insulinRatio: {
+      type: Number
+    },
+    insulinSensitivity: {
+      type: Number
+    },
+    lowerBgRange: {
+      type: Number
+    },
+    higherBgRange: {
+      type: Number
+    },
+    activeInsulin: {
+      type: Number
+    },
     device: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Device"
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Device"
     },
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
     }
   },
   schemaOptions

@@ -30,7 +30,7 @@ router.get('/:did', isAdmin, getDeviceByDID)
 router.post('/createDevice',
     [
         check('serialNo', "Device Id cannot be empty").not().isEmpty().trim().bail(),
-        check('modelName', "Model Name cannot be empty").not().isEmpty().trim().bail(),
+        check('modelType', "Model Name cannot be empty").not().isEmpty().trim().bail(),
         check('manufactureDate', "Manufacture Date cannot be empty").not().isEmpty().trim().bail(),
     ],
     isAdmin, createDevice)
