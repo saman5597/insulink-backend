@@ -36,10 +36,10 @@ exports.getAllUsers = async (req, res) => {
 exports.getLoggedInUser = async (req, res) => {
     try {
         const user = await User.findOne({ _id: req.auth.id })
-        // .populate({
-        //     path: "devices",
-        //     select: "-users"
-        // })
+        .populate({
+            path: "devices",
+            select: "-users"
+        })
 
         res.status(200).json({
             status: 1,
@@ -52,8 +52,7 @@ exports.getLoggedInUser = async (req, res) => {
                     gender: user.gender,
                     country: user.country,
                     status: user.status,
-                    role: user.role,
-                    deviceCount: user.devices.length
+                    devices: user.devices
                 }
             }, message: 'Getting data of logged in user from DB.'
         })
