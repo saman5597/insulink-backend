@@ -15,17 +15,25 @@ exports.uploadDeviceData = async (req, res) => {
         var glucoseArr = []
         var basalArr = []
         var bolusArr = []
-        const { deviceId, Glucose, Insulin } = req.body
+        const { device, Glucose, Insulin } = req.body
 
         // Either perform both operations on none
         await session.startTransaction()
 
-        const device = await Device.findOne({ serialNo: deviceId })
-        const device_id = device._id  //Mongoose Object Id
-        if (device) {
-            const updatedDevice = await Device.updateOne({ serialNo: deviceId }, { $addToSet: { users: req.auth.id } }, { upsert: true })
-            const user = await User.updateOne({ _id: req.auth.id }, { $addToSet: { devices: device_id } }, { upsert: true })
-        }
+        const device_id = req.device_id //Mongoose Object Id
+
+        const updatedDevice = await Device.updateOne({ serialNo: device.deviceId }, {
+            $addToSet: { users: req.auth.id },
+            upsert: true,
+            $set: {
+                "battery": device.batteryPercentage,
+                "reservoirDateTime": device.dateAndTimeOfReservoirChange,
+                "patchDateTime": device.dateAndTimeOfPachChange,
+                "reportedAt": device.date,
+                "reservoir": device.totalReservoir
+            }
+        })
+        const user = await User.updateOne({ _id: req.auth.id }, { $addToSet: { devices: device_id } }, { upsert: true })
 
         ///////////////////////////////////////////
         Glucose.forEach(el => {
@@ -33,7 +41,7 @@ exports.uploadDeviceData = async (req, res) => {
             el.BgValue.forEach(glucose => {
                 glucoseArr.push({
                     date,
-                    readingTime: glucose.readingTime.replace(/(.{2})$/, ':$1'),
+                    readingTime: glucose.readingTime, //.replace(/(.{2})$/, ':$1'),
                     glucoseReading: glucose.glucoseReading,
                     readingType: glucose.type,
                     device: device_id,
@@ -48,9 +56,16 @@ exports.uploadDeviceData = async (req, res) => {
             el.Bolus.forEach(bolus => {
                 bolusArr.push({
                     date,
-                    time: bolus.time.replace(/(.{2})$/, ':$1'),
+                    time: bolus.time, //.replace(/(.{2})$/, ':$1'),
                     dose: bolus.unit,
                     bolusType: bolus.type,
+                    fromWizard: bolus.isFrom,
+                    carbIntake: bolus.carbIntake,
+                    insulinRatio: bolus.insulinRatio,
+                    insulinSensitivity: bolus.insulinSensitivity,
+                    lowerBgRange: bolus.lowerBgRange,
+                    higherBgRange: bolus.higherBgRange,
+                    activeInsulin: bolus.activeInsulin,
                     device: device_id,
                     user: req.auth.id
                 })
@@ -59,8 +74,8 @@ exports.uploadDeviceData = async (req, res) => {
             el.Basal.forEach(basal => {
                 basalArr.push({
                     date,
-                    startTime: basal.startTime.replace(/(.{2})$/, ':$1'),
-                    endTime: basal.endTime.replace(/(.{2})$/, ':$1'),
+                    startTime: basal.startTime, //.replace(/(.{2})$/, ':$1'),
+                    endTime: basal.endTime, //.replace(/(.{2})$/, ':$1'),
                     flow: basal.flow,
                     device: device_id,
                     user: req.auth.id
@@ -156,12 +171,7 @@ exports.getDeviceByDID = async (req, res) => {
 exports.createDevice = async (req, res) => {
     try {
         const { serialNo, modelType, manufactureDate } = req.body
-
-        let errors = validationResult(req)
-        if (errors.isEmpty) {
-            return res.status(400).json({ status: 0, data: { err: errors.array() }, message: 'Validation error.' })
-        }
-
+        
         const device = Device({
             serialNo,
             modelType,
@@ -173,14 +183,29 @@ exports.createDevice = async (req, res) => {
         res.status(201).json({ status: 1, data: { device }, message: 'Device created successfully.' })
     } catch (err) {
         console.log(err)
-        res.status(500).json({
-            status: -1,
+        //handling duplicate key
+        if (err && err.code === 11000) {
+            return res.status(409).json({
+                status: 0,
+                data: {
+                    err: {
+                        generatedTime: new Date(),
+                        errMsg: err.message,
+                        msg: 'Device already exists.',
+                        type: 'DuplicateKeyError'
+                    }
+                }
+            })
+        }
+
+        return res.status(400).json({
+            status: 0,
             data: {
                 err: {
                     generatedTime: new Date(),
                     errMsg: err.message,
-                    msg: 'Internal Server Error.',
-                    type: err.name
+                    msg: 'Invalid data.',
+                    type: 'ValidationError'
                 }
             }
         })

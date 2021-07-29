@@ -2,6 +2,7 @@ const { check } = require('express-validator')
 
 const { uploadDeviceData, getAllDevices, getDeviceByDID, updateDevice, updateDeviceByDID, deleteDeviceByDID, createDevice } = require('../controllers/deviceController.js')
 const { isAuth, isUser, isAdmin } = require('../middlewares/authMiddleware')
+const { isDeviceRegistered } = require('../middlewares/deviceMiddleware')
 
 const router = require('express').Router()
 
@@ -21,7 +22,7 @@ var isObjectValid = (param) => {
     })
 }
 
-router.post('/uploadDeviceData', uploadDeviceData)
+router.post('/uploadDeviceData', isDeviceRegistered, uploadDeviceData)
 
 router.get('/', isAdmin, getAllDevices)
 
