@@ -11,7 +11,7 @@ exports.uploadDeviceData = async (req, res) => {
     const session = await mongoose.startSession()
     try {
         // console.log(req.body)
-        console.log(req.get("content-length") / 1024)
+        console.log(`Req body size: ${req.get("content-length") / 1024} KB`)
         var glucoseArr = []
         var basalArr = []
         var bolusArr = []
@@ -36,8 +36,10 @@ exports.uploadDeviceData = async (req, res) => {
         const user = await User.updateOne({ _id: req.auth.id }, { $addToSet: { devices: device_id } }, { upsert: true })
 
         ///////////////////////////////////////////
+        var temp = 0
         Glucose.forEach(el => {
             var date = el.date
+            temp = temp + el.BgValue.length
             el.BgValue.forEach(glucose => {
                 glucoseArr.push({
                     date,
@@ -49,9 +51,14 @@ exports.uploadDeviceData = async (req, res) => {
                 })
             })
         })
+        console.log("Glucose modules : " + temp)
 
+        var itemp = 0
         Insulin.forEach(el => {
             var date = el.date
+
+            itemp += el.Bolus.length
+            itemp += el.Basal.length
 
             el.Bolus.forEach(bolus => {
                 bolusArr.push({
@@ -82,6 +89,7 @@ exports.uploadDeviceData = async (req, res) => {
                 })
             })
         })
+        console.log("Insulin modules : " + itemp)
 
         const glucoseData = await GlucoseModel.insertMany(glucoseArr) // Glucose Data
         const bolusData = await Bolus.insertMany(bolusArr)            // Bolus Data

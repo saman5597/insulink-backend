@@ -3,7 +3,6 @@ const morgan = require('morgan')
 const cors = require('cors')
 const swaggerJsDoc = require('swagger-jsdoc')
 const swaggerUI = require('swagger-ui-express')
-const { buildSchema } = require('graphql')
 const { graphqlHTTP } = require('express-graphql')
 require('dotenv').config({ path: './configuration.env' })
 const userRoute = require('./routes/userRoutes')
@@ -13,8 +12,8 @@ const glucoseRoute = require('./routes/glucoseRoutes')
 const authRoute = require('./routes/authRoutes')
 const dashboardRoute = require('./routes/dashboardRoutes')
 const testRoutes = require('./routes/testRoutes')
-const User = require('./models/userModel')
-const Device = require('./models/deviceModel')
+const { isAuth } = require('./middlewares/authMiddleware')
+const { graphqlSchema, graphqlResolver } = require('./controllers/graphqlController')
 
 //Start express app
 const app = express()
@@ -62,42 +61,13 @@ app.use('/api/v1/devices', deviceRoute)
 app.use('/api/v1/insulin', insulinRoute)
 app.use('/api/v1/glucose', glucoseRoute)
 app.use('/api/v1/dashboard', dashboardRoute)
-app.use('/api/v2/test',testRoutes)
-
-var graphqlSchema = buildSchema(`
-  type User {
-    _id: ID!,
-    firstName: String!,
-    lastName: String!,
-    email: String!,
-    phone: Float!
-    gender: String!,
-    country: String!
-  }
-
-  type RootQuery {
-    getUsers: [User!]!
-  }
-
-  schema {
-    query: RootQuery
-  }
-`)
-
-var graphqlResolver = {
-  getUsers: () => {
-    return User.find().then(users => {
-      return users.map(user => {
-        return { ...user._doc }
-      })
-    }).catch(err => console.log(err))
-  }
-}
-
-app.use('/graphql', graphqlHTTP({
+app.use('/api/v2/test', testRoutes)
+app.use('/api/v2/graphql', isAuth, graphqlHTTP({
   schema: graphqlSchema,
   rootValue: graphqlResolver,
-  graphiql: true
+  graphiql: {
+    headerEditorEnabled: true
+  }
 }))
 
 // 404 handling Route
