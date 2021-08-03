@@ -31,11 +31,13 @@ const basalSchema = new mongoose.Schema(
         },
         device: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Device"
+            ref: "Device",
+            required: [true, 'Device id is required.']
         },
         user: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
+            ref: "User",
+            required: [true, 'User id is required.']
         }
     },
     schemaOptions

@@ -13,6 +13,7 @@ exports.uploadDeviceData = async (req, res) => {
         // console.log(req.body)
         console.log(`Req body size: ${req.get("content-length") / 1024} KB`)
         var glucoseArr = []
+        var glucoseData = []
         var basalArr = []
         var bolusArr = []
         const { device, Glucose, Insulin } = req.body
@@ -22,36 +23,55 @@ exports.uploadDeviceData = async (req, res) => {
 
         const device_id = req.device_id //Mongoose Object Id
 
-        const updatedDevice = await Device.updateOne({ serialNo: device.deviceId }, {
-            $addToSet: { users: req.auth.id },
-            upsert: true,
-            $set: {
-                "battery": device.batteryPercentage,
-                "reservoirDateTime": device.dateAndTimeOfReservoirChange,
-                "patchDateTime": device.dateAndTimeOfPachChange,
-                "reportedAt": device.date,
-                "reservoir": device.totalReservoir
-            }
-        })
-        const user = await User.updateOne({ _id: req.auth.id }, { $addToSet: { devices: device_id } }, { upsert: true })
+        if (device && device.batteryPercentage && device.dateAndTimeOfPachChange && device.dateAndTimeOfReservoirChange && device.date && device.totalReservoir) {
+            const updatedDevice = await Device.updateOne({ serialNo: device.deviceId }, {
+                $addToSet: { users: req.auth.id },
+                upsert: true,
+                $set: {
+                    "battery": device.batteryPercentage,
+                    "reservoirDateTime": device.dateAndTimeOfReservoirChange,
+                    "patchDateTime": device.dateAndTimeOfPachChange,
+                    "reportedAt": device.date,
+                    "reservoir": device.totalReservoir
+                }
+            })
+            const user = await User.updateOne({ _id: req.auth.id }, { $addToSet: { devices: device_id } }, { upsert: true })
+        } else {
+            return res.status(400).json({
+                status: 0,
+                data: {
+                    err: {
+                        generatedTime: new Date(),
+                        errMsg: 'Invalid device utility data.',
+                        msg: 'Invalid data.',
+                        type: 'ValidationError'
+                    }
+                }
+            })
+        }
 
         ///////////////////////////////////////////
         var temp = 0
-        Glucose.forEach(el => {
-            var date = el.date
-            temp = temp + el.BgValue.length
-            el.BgValue.forEach(glucose => {
-                glucoseArr.push({
-                    date,
-                    readingTime: glucose.readingTime, //.replace(/(.{2})$/, ':$1'),
-                    glucoseReading: glucose.glucoseReading,
-                    readingType: glucose.type,
-                    device: device_id,
-                    user: req.auth.id
-                })
+        if (Glucose && Glucose.length) {
+            Glucose.forEach(el => {
+                var date = el.date
+                temp = temp + el.BgValue.length
+                if (el.BgValue.length) {
+                    el.BgValue.forEach(glucose => {
+                        glucoseArr.push({
+                            date,
+                            readingTime: glucose.readingTime, //.replace(/(.{2})$/, ':$1'),
+                            glucoseReading: glucose.glucoseReading,
+                            readingType: glucose.type,
+                            device: device_id,
+                            user: req.auth.id
+                        })
+                    })
+                }
             })
-        })
-        console.log("Glucose modules : " + temp)
+            glucoseData = await GlucoseModel.insertMany(glucoseArr) // Glucose Data
+            console.log("Glucose modules : " + temp)
+        }
 
         var itemp = 0
         Insulin.forEach(el => {
@@ -91,10 +111,8 @@ exports.uploadDeviceData = async (req, res) => {
         })
         console.log("Insulin modules : " + itemp)
 
-        const glucoseData = await GlucoseModel.insertMany(glucoseArr) // Glucose Data
-        const bolusData = await Bolus.insertMany(bolusArr)            // Bolus Data
         const basalData = await Basal.insertMany(basalArr)            // Basal Data
-
+        const bolusData = await Bolus.insertMany(bolusArr)            // Bolus Data
         session.commitTransaction()
         session.endSession()
 
@@ -179,7 +197,7 @@ exports.getDeviceByDID = async (req, res) => {
 exports.createDevice = async (req, res) => {
     try {
         const { serialNo, modelType, manufactureDate } = req.body
-        
+
         const device = Device({
             serialNo,
             modelType,

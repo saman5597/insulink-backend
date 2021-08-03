@@ -22,11 +22,11 @@ const deviceSchema = new mongoose.Schema(
             type: String,
             enum: ['standard', 'pro'],
             default: 'standard',
-            required: [true, 'Model Name is required.']
+            required: [true, 'Model type is required.']
         },
         manufactureDate: {
             type: Date,
-            required: [true, 'Manufacture Date is required.']
+            required: [true, 'Manufacture date is required.']
         },
         battery: {
             type: Number,
