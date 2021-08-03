@@ -24,7 +24,7 @@ exports.isDeviceRegistered = async (req, res, next) => {
     } catch (err) {
         console.log(err)
         res.status(500).json({
-            status: 0,
+            status: -1,
             data: {
                 err: {
                     generatedTime: new Date(),
