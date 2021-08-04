@@ -515,7 +515,7 @@ exports.getUpdatedDeviceDetails = async (req, res) => {
                 $unwind: '$devices'
             },
             {
-                $project: { _id: 0, 'devices.serialNo': 1, 'devices.battery': 1, 'devices.reservoir': 1, 'devices.updatedAt': 1 }
+                $project: { _id: 0, 'devices.serialNo': 1, 'devices.battery': 1, 'devices.reservoir': 1, 'devices.reservoirDateTime': 1, 'devices.patchDateTime': 1, 'devices.updatedAt': 1 }
             },
             {
                 $sort: { 'devices.updatedAt': -1 }
@@ -529,7 +529,9 @@ exports.getUpdatedDeviceDetails = async (req, res) => {
             data: {
                 device: {
                     battery: user && user[0] ? user[0].devices.battery : 0,
-                    reservoir: user && user[0] ? user[0].devices.reservoir : 0
+                    reservoir: user && user[0] ? user[0].devices.reservoir : 0,
+                    reservoirTimestamp: user && user[0] ? user[0].devices.reservoirDateTime : "",
+                    patchTimestamp: user && user[0] ? user[0].devices.patchDateTime : ""
                 }
             },
             message: 'Get last updated device details'
