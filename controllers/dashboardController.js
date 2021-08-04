@@ -24,6 +24,24 @@ function dateRange(startDate, endDate) {
     return dates;
 }
 
+function getDateFormat(ISOdate) {
+    let date = new Date(ISOdate)
+
+    let year = date.getFullYear()
+    let month = date.getMonth() + 1
+    let dt = date.getDate()
+
+    if (dt < 10) {
+        dt = `0${dt}`
+    }
+
+    if (month < 10) {
+        month = `0${month}`
+    }
+
+    return `${dt}-${month}-${year}`
+}
+
 exports.getReport = async (req, res) => {
     try {
         var queryObj
@@ -530,8 +548,8 @@ exports.getUpdatedDeviceDetails = async (req, res) => {
                 device: {
                     battery: user && user[0] ? user[0].devices.battery : 0,
                     reservoir: user && user[0] ? user[0].devices.reservoir : 0,
-                    reservoirTimestamp: user && user[0] ? user[0].devices.reservoirDateTime : "",
-                    patchTimestamp: user && user[0] ? user[0].devices.patchDateTime : ""
+                    reservoirTimestamp: user && user[0] ? getDateFormat(user[0].devices.reservoirDateTime) : "",
+                    patchTimestamp: user && user[0] ? getDateFormat(user[0].devices.patchDateTime) : ""
                 }
             },
             message: 'Get last updated device details'
