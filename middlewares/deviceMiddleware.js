@@ -12,7 +12,7 @@ exports.isDeviceRegistered = async (req, res, next) => {
                         generatedTime: new Date(),
                         errMsg: 'Device not found.',
                         msg: 'Invalid data.',
-                        type: 'ValidationError'
+                        type: 'MongoDBError'
                     }
                 }
             })

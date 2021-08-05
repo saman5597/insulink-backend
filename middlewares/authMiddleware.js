@@ -33,7 +33,7 @@ exports.isAuth = async (req, res, next) => {
             generatedTime: new Date(),
             errMsg: 'Not authenticated.',
             msg: 'You are not logged in. Please login.',
-            type: 'UnauthorizedError'
+            type: 'AuthenticationError'
           }
         }
       })
@@ -50,7 +50,7 @@ exports.isAuth = async (req, res, next) => {
             generatedTime: new Date(),
             errMsg: 'Not authenticated.',
             msg: 'The user belonging to the token does no longer exist.',
-            type: 'UnauthorizedError'
+            type: 'AuthenticationError'
           }
         }
       })
@@ -68,7 +68,7 @@ exports.isAuth = async (req, res, next) => {
           generatedTime: new Date(),
           errMsg: error.name,
           msg: 'You are logged out.',
-          type: 'UnauthorizedError'
+          type: 'AuthenticationError'
         }
       }
 
