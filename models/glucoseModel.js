@@ -44,6 +44,8 @@ const glucoseSchema = new mongoose.Schema(
   schemaOptions
 )
 
+glucoseSchema.index({ date: 1, readingTime: 1, device: 1, user: 1 }, { unique: true })
+
 const Glucose = mongoose.model('Glucose', glucoseSchema)
 
 module.exports = Glucose
