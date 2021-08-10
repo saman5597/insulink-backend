@@ -32,7 +32,8 @@ exports.uploadDeviceData = async (req, res) => {
                     "reservoirDateTime": device.dateAndTimeOfReservoirChange,
                     "patchDateTime": device.dateAndTimeOfPachChange,
                     "reportedAt": device.date,
-                    "reservoir": device.totalReservoir
+                    "reservoir": device.totalReservoir,
+                    "updatedAt": new Date().toISOString()
                 }
             })
             const user = await User.updateOne({ _id: req.auth.id }, { $addToSet: { devices: device_id } }, { upsert: true })
@@ -52,6 +53,7 @@ exports.uploadDeviceData = async (req, res) => {
 
         ///////////////////////////////////////////
         var temp = 0
+        console.log(`Glucose packets : ${Glucose.length}`)
         if (Glucose && Glucose.length) {
             Glucose.forEach(el => {
                 var date = el.date
@@ -74,6 +76,7 @@ exports.uploadDeviceData = async (req, res) => {
         }
 
         var itemp = 0
+        console.log(`Insulin packets : ${Insulin.length}`)
         Insulin.forEach(el => {
             var date = el.date
 
