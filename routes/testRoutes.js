@@ -8,5 +8,4 @@ router.get('/all-users/:id', getUserByUserIdNew)
 
 router.get('/all-devices', getAllDevicesNew)
 
-
 module.exports = router

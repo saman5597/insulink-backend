@@ -42,7 +42,7 @@ exports.getUserByUserIdNew = async (req, res) => {
             queryObj = { _id: req.params.id, status: "active" }
         } else queryObj = { _id: req.params.id }
 
-        const user = await User.find(queryObj).populate({
+        const user = await User.findOne(queryObj).populate({
             path: "devices",
             select: "_id serialNo modelType manufactureDate battery reservoir"
         })
