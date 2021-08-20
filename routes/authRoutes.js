@@ -1,6 +1,6 @@
 const { body, check } = require('express-validator')
 
-const { signUp, loginUsingEmail, loginUsingMob, forgotPwd, resetPwd, logout } = require('../controllers/authController.js')
+const { signUp, adminSignup, adminLogin, loginUsingEmail, loginUsingMob, forgotPwd, resetPwd, logout } = require('../controllers/authController.js')
 const { isAuth, isUser, isAdmin } = require('../middlewares/authMiddleware')
 
 const router = require('express').Router()
@@ -40,6 +40,10 @@ router.post('/signup',
     check('password', "Password length should not be < 6").isLength({ min: 6 }),
     signUp
 )
+
+router.post('/admin/signup', adminSignup)
+
+router.post('/admin/login', adminLogin)
 
 /**
  * @swagger

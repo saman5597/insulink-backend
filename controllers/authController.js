@@ -101,6 +101,131 @@ exports.signUp = async (req, res) => {
     }
 }
 
+exports.adminSignup = async (req, res) => {
+    try {
+        const { firstName, lastName, email, phone, gender, country, password } = req.body
+
+        const admin = User({
+            firstName,
+            lastName,
+            email,
+            phone,
+            gender,
+            country,
+            pass: password,
+            role: 1
+        })
+
+        const newAdmin = await admin.save()
+
+        createJWT(newAdmin, 201, "Admin signed up successfully.", res)
+    } catch (err) {
+
+        console.log(err.message)
+
+        //handling duplicate key
+        if (err && err.code === 11000) {
+            return res.status(409).json({
+                status: 0,
+                data: {
+                    err: {
+                        generatedTime: new Date(),
+                        errMsg: err.message,
+                        msg: 'Admin already exists.',
+                        type: 'DuplicateKeyError'
+                    }
+                }
+            })
+        }
+
+        return res.status(400).json({
+            status: 0,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Invalid data.',
+                    type: 'ValidationError'
+                }
+            }
+        })
+
+    }
+}
+
+exports.adminLogin = async (req, res) => {
+    try {
+
+        const { email, password } = req.body
+
+        if (!email || !password) {
+            return res.status(400).json({
+                status: 0,
+                data: {
+                    err: {
+                        generatedTime: new Date(),
+                        errMsg: 'Please enter your credentials.',
+                        msg: 'Please enter your credentials.',
+                        type: 'ValidationError'
+                    }
+                }
+            })
+        }
+
+        var admin
+        if (email) {
+            admin = await User.findOne({ email, role: 1 }).select('+password')
+            if (admin) {
+                if (!admin || !(admin.comparePassword(password, admin.password))) {
+                    return res.status(401).json({
+                        status: 0,
+                        data: {
+                            err: {
+                                generatedTime: new Date(),
+                                errMsg: 'Incorrect credentials.',
+                                msg: 'Incorrect credentials.',
+                                type: 'AuthenticationError'
+                            }
+                        }
+                    })
+                }
+
+                const loggedAdmin = await User.updateOne({ email }, { $set: { status: 'active' } })
+
+                createJWT(admin, 200, 'Admin logged in successfully.', res)
+
+            }
+            else {
+                return res.status(404).json({
+                    status: 0,
+                    data: {
+                        err: {
+                            generatedTime: new Date(),
+                            errMsg: 'Account does not exist. Please register first.',
+                            msg: 'Account does not exist. Please register first.',
+                            type: 'MongoDBError'
+                        }
+                    }
+                })
+            }
+        }
+
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            status: -1,
+            data: {
+                err: {
+                    generatedTime: new Date(),
+                    errMsg: err.message,
+                    msg: 'Internal Server Error.',
+                    type: err.name
+                }
+            }
+        })
+    }
+}
+
 exports.loginUsingEmail = async (req, res) => {
     try {
 
