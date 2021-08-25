@@ -161,7 +161,7 @@ exports.getMonthlyReport = async (req, res) => {
         const currentDate = new Date().toISOString()
 
         var subtractedDate = new Date()
-        var newDate = subtractedDate.setMonth(subtractedDate.getMonth() - parseInt(req.params.month))
+        var newDate = subtractedDate.setMonth(subtractedDate.getMonth() - parseInt(req.params.month) + 1)
 
         const startDate = new Date(newDate).toISOString().split("T")[0].concat("T00:00:00.000Z")
         const endDate = currentDate.split("T")[0].concat("T00:00:00.000Z")
