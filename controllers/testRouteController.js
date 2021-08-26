@@ -4,10 +4,14 @@ const User = require('../models/userModel')
 exports.getAllUsersNew = async (req, res) => {
     try {
         var queryObj
-        if (req.query["status"] === "inactive") {
-            queryObj = { status: "inactive" }
-        } else if (req.query["status"] === "active") {
-            queryObj = { status: "active" }
+        // if (req.query["status"] === "inactive") {
+        //     queryObj = { status: "inactive" }
+        // } else if (req.query["status"] === "active") {
+        //     queryObj = { status: "active" }
+        // } else queryObj = {}
+
+        if (req.query["name"]) {
+            queryObj = { $or: [{ 'firstName': { $regex: '.*' + req.query["name"] + '.*', '$options': 'i' } }, { 'lastName': { $regex: '.*' + req.query["name"] + '.*', '$options': 'i' } }] }
         } else queryObj = {}
 
         const users = await User.find(queryObj).populate({
