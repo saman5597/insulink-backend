@@ -5,6 +5,12 @@ const Basal = require('../models/basalModel')
 const User = require('../models/userModel')
 const Device = require('../models/deviceModel')
 
+/**
+ * Takes start date & end date and returns the date range between them
+ * @param {*} startDate 
+ * @param {*} endDate 
+ * @returns [dates (YYYY-MM)]
+ */
 function dateRange(startDate, endDate) {
     var start = startDate.split('-');
     var end = endDate.split('-');
@@ -24,6 +30,11 @@ function dateRange(startDate, endDate) {
     return dates;
 }
 
+/**
+ * Returns the ISO date to DD-MM-YYYY date format
+ * @param {*} ISOdate 
+ * @returns date (dd-mm-yyyy)
+ */
 function getDateFormat(ISOdate) {
     let date = new Date(ISOdate)
 
@@ -42,6 +53,13 @@ function getDateFormat(ISOdate) {
     return `${dt}-${month}-${year}`
 }
 
+/**
+ * Get avg report between two dates (Insulin, Glucose, Carb Intake)
+ * @reqHeaders { Authorization : " Bearer [TOKEN] " }
+ * @params startDate , endDate
+ * @returns response as JSON object
+ * @author Saman Arshad
+ */
 exports.getReport = async (req, res) => {
     try {
         var queryObj
@@ -156,6 +174,12 @@ exports.getReport = async (req, res) => {
     }
 }
 
+/**
+ * Get avg report monthwise (Insulin, Glucose, Carb Intake)
+ * @reqHeaders { Authorization : " Bearer [TOKEN] " }
+ * @returns response as JSON object
+ * @author Saman Arshad
+ */
 exports.getMonthlyReport = async (req, res) => {
     try {
         const currentDate = new Date().toISOString()
@@ -434,6 +458,12 @@ exports.getMonthlyReport = async (req, res) => {
     }
 }
 
+/**
+ * Get today's intake for Insulin, Glucose and Carb Intake
+ * @reqHeaders { Authorization : " Bearer [TOKEN] " }
+ * @returns response as JSON object
+ * @author Saman Arshad
+ */
 exports.getTodayIntake = async (req, res) => {
     try {
         const currentDate = new Date().toISOString()
@@ -520,6 +550,12 @@ exports.getTodayIntake = async (req, res) => {
     }
 }
 
+/**
+ * Get recently updated device details
+ * @reqHeaders { Authorization : " Bearer [TOKEN] " }
+ * @returns response as JSON object
+ * @author Saman Arshad
+ */
 exports.getUpdatedDeviceDetails = async (req, res) => {
     try {
         const user = await User.aggregate([

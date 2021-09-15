@@ -14,8 +14,13 @@ const crypto = require('crypto')
 
 const sendMail = require('../config/emailHandler')
 const User = require('../models/userModel')
-const { validationResult } = require("express-validator")
 
+/**
+ * Creates a JWT Token
+ * @param {id} id 
+ * @returns token
+ * @author Saman Arshad
+ */
 const signToken = async id => {
     const token = await jwtr.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN,
@@ -24,6 +29,15 @@ const signToken = async id => {
     return token
 }
 
+/**
+ * Signs a JWT token and sends the token in headers and response
+ * @param {*} user
+ * @param {*} statusCode 
+ * @param {*} message 
+ * @param {*} res 
+ * @returns JWT in headers and response
+ * @author Saman Arshad
+ */
 const createJWT = async (user, statusCode, message, res) => {
 
     const token = await signToken(user._id)
@@ -50,6 +64,12 @@ const createJWT = async (user, statusCode, message, res) => {
     })
 }
 
+/**
+ * User signup/register
+ * @reqBody {firstName, lastName, email, phone, gender,country, password} 
+ * @returns response as JSON object
+ * @author Saman Arshad
+ */
 exports.signUp = async (req, res) => {
     try {
         const { firstName, lastName, email, phone, gender, country, password } = req.body
@@ -101,6 +121,12 @@ exports.signUp = async (req, res) => {
     }
 }
 
+/**
+ * Admin signup/register
+ * @reqBody {firstName, lastName, email, phone, gender,country, password} 
+ * @returns response as JSON object
+ * @author Saman Arshad
+ */
 exports.adminSignup = async (req, res) => {
     try {
         const { firstName, lastName, email, phone, gender, country, password } = req.body
@@ -153,6 +179,12 @@ exports.adminSignup = async (req, res) => {
     }
 }
 
+/**
+ * Admin Login
+ * @reqBody { email, password }
+ * @returns response as JSON object
+ * @author Saman Arshad
+ */
 exports.adminLogin = async (req, res) => {
     try {
 
@@ -226,6 +258,12 @@ exports.adminLogin = async (req, res) => {
     }
 }
 
+/**
+ * User Login with Email , password
+ * @reqBody { email, password }
+ * @returns response as JSON object
+ * @author Saman Arshad
+ */
 exports.loginUsingEmail = async (req, res) => {
     try {
 
@@ -299,6 +337,12 @@ exports.loginUsingEmail = async (req, res) => {
     }
 }
 
+/**
+ * User Login with Phone , password
+ * @reqBody { phone, password }
+ * @returns response as JSON object
+ * @author Saman Arshad
+ */
 exports.loginUsingMob = async (req, res) => {
     try {
 
@@ -371,18 +415,14 @@ exports.loginUsingMob = async (req, res) => {
     }
 }
 
+/**
+ * Forgot Password
+ * @reqBody { email }
+ * @returns reset password URL in its response as JSON object
+ * @author Saman Arshad
+ */
 exports.forgotPwd = async (req, res) => {
     try {
-
-        // let errors = validationResult(req)
-        // if (errors.isEmpty) {
-        //     return res.status(400).json({
-        //         status: -1,
-        //         data: {
-        //             errs: errors.array()
-        //         }
-        //     })
-        // }
 
         if (!req.body.email) {
             return res.status(400).json({
@@ -450,20 +490,14 @@ exports.forgotPwd = async (req, res) => {
     }
 }
 
+/**
+ * Reset Password
+ * @reqBody { password }
+ * @returns response as JSON object
+ * @author Saman Arshad
+ */
 exports.resetPwd = async (req, res) => {
     try {
-
-
-        // let errors = validationResult(req)
-        // if (errors.isEmpty) {
-        //     return res.status(400).json({
-        //         status: -1,
-        //         data: {
-        //             errs: errors.array()
-        //         }
-        //     })
-        // }
-
 
         const hashedToken = crypto.createHash('sha256').update(req.query.rt).digest('hex')
         const user = await User.findOne({
@@ -527,6 +561,12 @@ exports.resetPwd = async (req, res) => {
 
 }
 
+/**
+ * User/Admin logout
+ * @reqHeaders { Authorization : " Bearer [TOKEN] " }
+ * @returns response as JSON object
+ * @author Saman Arshad
+ */
 exports.logout = async (req, res) => {
     try {
         const user = await User.findOne({

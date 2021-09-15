@@ -1,12 +1,16 @@
 const mongoose = require('mongoose')
-const { validationResult } = require("express-validator")
-
 const Device = require('../models/deviceModel')
 const User = require('../models/userModel')
 const GlucoseModel = require('../models/glucoseModel')
 const Bolus = require('../models/bolusModel')
 const Basal = require('../models/basalModel')
 
+/**
+ * Upload device data to DB
+ * @reqBody { device, Glucose, Insulin }
+ * @returns response as JSON object
+ * @author Saman Arshad
+ */
 exports.uploadDeviceData = async (req, res) => {
     const session = await mongoose.startSession()
     try {

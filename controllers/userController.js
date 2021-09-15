@@ -1,6 +1,12 @@
 const User = require('../models/userModel')
 const Device = require('../models/deviceModel')
 
+/**
+ * Get all users
+ * @reqHeaders { Authorization : " Bearer [TOKEN] " }
+ * @returns user list in response as JSON object
+ * @author Saman Arshad
+ */
 exports.getAllUsers = async (req, res) => {
     try {
         var queryObj
@@ -33,6 +39,12 @@ exports.getAllUsers = async (req, res) => {
     }
 }
 
+/**
+ * Get logged in user
+ * @reqHeaders { Authorization : " Bearer [TOKEN] " }
+ * @returns user details in response as JSON object
+ * @author Saman Arshad
+ */
 exports.getLoggedInUser = async (req, res) => {
     try {
         const user = await User.findOne({ _id: req.auth.id })
@@ -72,6 +84,13 @@ exports.getLoggedInUser = async (req, res) => {
     }
 }
 
+/**
+ * Change user/admin password
+ * @reqHeaders { Authorization : " Bearer [TOKEN] " }
+ * @reqBody { passwordOld, passwordUpdated }
+ * @returns response as JSON object
+ * @author Saman Arshad
+ */
 exports.changePassword = async (req, res) => {
     try {
         const { passwordOld, passwordUpdated } = req.body
@@ -160,6 +179,13 @@ exports.changePassword = async (req, res) => {
     }
 }
 
+/**
+ * Update profile
+ * @reqHeaders { Authorization : " Bearer [TOKEN] " }
+ * @reqBody { firstName, lastName, gender, phone, country }
+ * @returns response as JSON object
+ * @author Saman Arshad
+ */
 exports.updateProfile = async (req, res) => {
     try {
         const { firstName, lastName, gender, phone, country } = req.body
@@ -244,6 +270,12 @@ exports.updateProfile = async (req, res) => {
     }
 }
 
+/**
+ * Deactivate account
+ * @reqHeaders { Authorization : " Bearer [TOKEN] " }
+ * @returns response as JSON object
+ * @author Saman Arshad
+ */
 exports.deactivateAccount = async (req, res) => {
     try {
         const user = await User.findOne({
@@ -286,6 +318,12 @@ exports.deactivateAccount = async (req, res) => {
     }
 }
 
+/**
+ * Delete account
+ * @reqHeaders { Authorization : " Bearer [TOKEN] " }
+ * @returns response as JSON object
+ * @author Saman Arshad
+ */
 exports.deleteAccount = async (req, res) => {
     try {
         const user = await User.findOne({
