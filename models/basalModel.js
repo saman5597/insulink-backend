@@ -43,7 +43,7 @@ const basalSchema = new mongoose.Schema(
     schemaOptions
 )
 
-basalSchema.index({ date: 1, startTime: 1, endTime: 1, device: 1, user: 1 }, { unique: true })
+// basalSchema.index({ date: 1, startTime: 1, endTime: 1, device: 1, user: 1 }, { unique: true })
 
 const Basal = mongoose.model('Basal', basalSchema)
 

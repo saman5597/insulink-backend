@@ -66,7 +66,7 @@ const bolusSchema = new mongoose.Schema(
   schemaOptions
 )
 
-bolusSchema.index({ date: 1, time: 1, device: 1, user: 1 }, { unique: true })
+// bolusSchema.index({ date: 1, time: 1, device: 1, user: 1 }, { unique: true })
 
 const Bolus = mongoose.model('Bolus', bolusSchema)
 
